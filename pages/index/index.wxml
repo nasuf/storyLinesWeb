@@ -1,0 +1,21 @@
+<!--index.wxml-->
+<view class="container">
+
+    <view class="item" wx:for="{{stories}}" wx:for-item="story">
+            <view class="weui-panel__bd" wx:if="{{!story.isDeleted}}" bindtap="onCheckDetail" data-id="{{story.id}}" data-title="{{story.storyTitle}}" hover-class="weui-cell_active">
+                <view class="weui-media-box weui-media-box_text">
+                    <view class="weui-media-box__title weui-media-box__title_in-text">
+                        {{story.storyTitle}}
+                    </view>
+                    <view class="weui-media-box__desc">
+                        <text class="text" decode="{{true}}">
+                            {{story.content}}
+                        </text>
+                    </view>
+                    <view class="weui-media-box__info">
+                        <view class="weui-media-box__info__meta">{{(story.phaseCount == 1 ? '发布于：' : '更新于：') + story.createdDate}}</view>
+                    </view>
+                </view>
+            </view>
+        </view>
+</view>
