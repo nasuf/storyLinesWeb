@@ -10,7 +10,7 @@
 	"compileType": "miniprogram",
 	"libVersion": "1.9.1",
 	"appid": "wxee45d2d0a12bf77a",
-	"projectname": "storyLine",
+	"projectname": "storyLineWeb",
 	"isGameTourist": false,
 	"condition": {
 		"search": {

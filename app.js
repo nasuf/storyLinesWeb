@@ -64,7 +64,7 @@ App({
     },
     globalData: {
         userInfo: null,
-        //serverHost: "http://localhost:19095"
-        serverHost: "https://story.nasuf.cn"
+        serverHost: "http://localhost:19095"
+        //serverHost: "https://story.nasuf.cn"
     }
 })
