@@ -2,12 +2,27 @@
     "pages": [
         "pages/index/index",
         "pages/line/line",
-        "pages/newPhase/newPhase"
+        "pages/newPhase/newPhase",
+        "pages/newStory/newStory"
     ],
     "window": {
         "backgroundTextStyle": "light",
         "navigationBarBackgroundColor": "#f5f5f5",
         "navigationBarTitleText": "WeChat",
         "navigationBarTextStyle": "black"
+    },
+    "tabBar": {
+        "list": [
+            {
+                "pagePath": "pages/index/index",
+                "position": "top",
+                "text": "首页"
+            },
+            {
+                "pagePath": "pages/newStory/newStory",
+                "position": "top",
+                "text": "新故事线"
+            }
+        ]
     }
 }

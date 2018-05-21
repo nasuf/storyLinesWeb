@@ -1,37 +1,118 @@
 //app.js
 App({
     onLaunch: function () {
-        // 展示本地存储能力
-        var logs = wx.getStorageSync('logs') || []
-        logs.unshift(Date.now())
-        wx.setStorageSync('logs', logs)
+        this.login();
+        
+    },
 
-        // 登录
-        wx.login({
-            success: res => {
-                // 发送 res.code 到后台换取 openId, sessionKey, unionId
-            }
-        })
-        // 获取用户信息
+    auth: function () {
+        var _this = this;
         wx.getSetting({
-            success: res => {
-                if (res.authSetting['scope.userInfo']) {
-                    // 已经授权，可以直接调用 getUserInfo 获取头像昵称，不会弹框
-                    wx.getUserInfo({
-                        success: res => {
-                            // 可以将 res 发送给后台解码出 unionId
-                            this.globalData.userInfo = res.userInfo
-
-                            // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
-                            // 所以此处加入 callback 以防止这种情况
-                            if (this.userInfoReadyCallback) {
-                                this.userInfoReadyCallback(res)
+            success: function (res) {
+                // not authorized
+                if (!res.authSetting['scope.userInfo']) {
+                    wx.showModal({
+                        title: '用户未授权',
+                        content: '如需正常使用该小程序的全部功能，请允许我们获取您的已公开的微信用户信息（如微信昵称，头像等）。请点击授权按钮完成授权。谢谢配合。',
+                        showCancel: false,
+                        success: function (res) {
+                            if (res.confirm) {
+                                console.log('用户点击确定')
                             }
                         }
+                    })
+                } else {
+                    // authorized
+                    wx.getUserInfo({
+                        success: res => {
+                            console.log(res);
+                            _this.globalData.userInfo = res.userInfo;
+                            _this.globalData.authorized = true;
+                            _this.login();
+                        },
                     })
                 }
             }
         })
+    },
+
+    refreshUserInfo: function () {
+        var _this = this;
+        wx.getSetting({
+            success: function (res) {
+                // authorized
+                if (res.authSetting['scope.userInfo']) {
+                    wx.getUserInfo({
+                        success: function (res) {
+                            console.log(res);
+                            _this.globalData.userInfo = res.userInfo;
+                            _this.globalData.authorized = true;
+                            // refresh userinfo 
+                            wx.request({
+                                url: _this.globalData.serverHost + '/auth/info?openid=' + _this.globalData.openid,
+                                data: _this.globalData.userInfo,
+                                method: 'POST',
+                                success: function (res) {
+                                    console.log("refresh latest userInfo: " + res)
+                                }
+                            })
+                        }
+                    });
+                }
+            }
+        })
+
+    },
+
+    login: function () {
+        // 登录
+        wx.login({
+            success: res => {
+                var _this = this;
+                // 发送 res.code 到后台换取 openId, sessionKey, unionId
+                console.log("entered login ")
+                wx.showLoading({
+                    title: '正在加载',
+                    icon: 'loading'
+                });
+                wx.request({
+                    url: _this.globalData.serverHost + '/auth/openid?code=' + res.code,
+                    data: {},
+                    method: 'POST',
+                    success: function (res) {
+                        console.log("res:" + res)
+                        wx.hideLoading();
+                        _this.globalData.openid = res.data.data.openid;
+                        _this.globalData.role = res.data.data.role;
+                        _this.refreshUserInfo();
+                        // 查看管理员登录状态
+                        if (_this.globalData.role == "ADMIN") {
+                            wx.getStorage({
+                                key: 'adminLoginKey',
+                                success: function (res) {
+                                    console.log("adminLoginKey: " + res.data);
+                                    var adminLoginKey = res.data;
+                                    wx.request({
+                                        url: _this.globalData.serverHost + '/auth/validate/adminOnlineStatus?openid=' + _this.globalData.openid + '&adminLoginKey=' + adminLoginKey,
+                                        method: 'GET',
+                                        success: function (res) {
+                                            console.log("adminLoginStatus:" + res.data.data.adminLoginStatus);
+                                            var adminLoginStatus = res.data.data.adminLoginStatus;
+                                            if (adminLoginStatus == true) {
+                                                // 设置管理员登录状态为true
+                                                _this.globalData.adminLoginStatus = true;
+                                            }
+                                        }
+                                    })
+                                }
+                            })
+                        }
+
+                    }
+                })
+            }
+        })
+
     },
 
     formatDate: function (milliseconds) {
@@ -64,7 +145,8 @@ App({
     },
     globalData: {
         userInfo: null,
-        serverHost: "http://localhost:19095"
-        //serverHost: "https://story.nasuf.cn"
+        //serverHost: "http://localhost:19095",
+        serverHost: "https://story.nasuf.cn",
+        authorized: false
     }
 })

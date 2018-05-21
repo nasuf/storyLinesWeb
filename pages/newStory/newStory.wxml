@@ -1,0 +1,32 @@
+<view style="width: 100%">
+    <view class="weui-toptips weui-toptips_warn" wx:if="{{showTopErrorTips}}">{{errorMsg}}</view>
+    <view class="weui-cells__title">基本信息</view>
+    <view class="weui-cells weui-cells_after-title">
+        <view class="weui-cell weui-cell_input">
+            <view class="weui-cell__hd">
+                <view class="weui-label">标题</view>
+            </view>
+            <view class="weui-cell__bd">
+                <input name="title" class="weui-input" placeholder="请输入标题" bindinput="inputChange" data-key="title" />
+            </view>
+        </view>
+        <view class="weui-cell weui-cell_switch">
+            <view class="weui-cell__bd">是否公开</view>
+            <view class="weui-cell__ft">
+                <switch data-key="isPrivate" checked bindchange="switchChange" />
+            </view>
+        </view>
+        <view class="weui-cell weui-cell_switch">
+            <view class="weui-cell__bd">后续情节需要本人审核</view>
+            <view class="weui-cell__ft">
+                <switch data-key="needAuth" bindchange="switchChange" />
+            </view>
+        </view>
+    </view>
+    <view class="weui-cells__title"></view>
+    <view class="weui-cells__title">请输入故事内容</view>
+</view>
+
+<textarea class="textarea" focus="true" cursor-spacing='100' bindinput="inputChange" data-key="content" maxlength='-1' value='{{phase.content}}' />
+
+<button class="weui-btn publish" type="primary" bindtap="post">发布</button>
