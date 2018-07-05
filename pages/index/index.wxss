@@ -36,11 +36,19 @@ page, .page, .page__bd{
 }
 
 .publish {
-    width: 90%;
+    width: 20%;
     height: 40px;
-    line-height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 5px !important;
+    margin-top: 10px !important;
+    color: gray !important;
+    font-size: 15px;
+    background-color: #eaeaea !important;
+    border-color: #eaeaea !important;
+    font-weight: bolder;
 }
 
 .authorize {
@@ -71,10 +79,14 @@ page, .page, .page__bd{
     background-color: #ececec;
     /* background-color: #000000; */
     border-radius: 10px;
+    box-shadow:5px 2px 6px gray;
+    /* transition:width 2s;
+	-webkit-transition:width 2s;  */
 }
 
 .weui-cell_active {
-    background-color: #f5f5f5;
+    /* background-color: #f5f5f5; */
+    box-shadow:3px 2px 1px gray
 }
 
 .text {
@@ -83,7 +95,7 @@ page, .page, .page__bd{
     text-overflow: ellipsis !important;
     overflow: hidden !important;
     -webkit-box-orient: vertical !important;
-    -webkit-line-clamp: 4 !important;
+    -webkit-line-clamp: 8 !important;
     line-height: 20px;
 }
 

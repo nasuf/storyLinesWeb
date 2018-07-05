@@ -10,7 +10,9 @@ Page({
         newPhase: {},
         storyId: '',
         isNewStory: '',
-        parentPhaseId: ''
+        parentPhaseId: '',
+        showTopErrorTips: false,
+        errorMsg: ''
     },
 
     /**
@@ -54,8 +56,67 @@ Page({
         })
     },
 
-    post: function (e) {
+    post: function () {
+        var _this = this;
+        var validated = this.validate();
+        if (!validated) {
+            return;
+        }
+        wx.showLoading({
+            title: '正在发布...',
+            icon: 'loading',
+        });
+        wx.showNavigationBarLoading();
+        wx.request({
+            url: app.globalData.serverHost + '/story/story?openid=' + app.globalData.openid + '&isNewStory=false' + '&openid=' + app.globalData.openid + '&parentPhaseId=' + this.data.parentPhaseId + '&storyId=' + this.data.storyId,
+            data: _this.data.newPhase,
+            method: 'POST',
+            success: function (res) {
+                wx.hideLoading();
+                if (res.data.status == 'success') {
 
+                    wx.hideNavigationBarLoading()
+                    wx.showToast({
+                        title: '发布成功',
+                        icon: 'success',
+                        success: function () {
+                            setTimeout(function () {
+                                wx.navigateBack({
+                                    
+                                })
+                                // wx.redirectTo({
+                                //     url: '../index/index',
+                                // })
+                            }, 1500);
+                        }
+                    });
+
+                } else {
+                    _this.showTopErrorTips('发布失败，请重试');
+                }
+            }
+        })
+    },
+
+    validate: function () {
+        if (!this.data.newPhase.content) {
+            this.showTopErrorTips('请输入内容')
+            return false;
+        }
+        return true;
+    },
+
+    showTopErrorTips: function (errorMsg) {
+        var _this = this;
+        this.setData({
+            showTopErrorTips: true,
+            errorMsg: errorMsg
+        });
+        setTimeout(function () {
+            _this.setData({
+                showTopErrorTips: false
+            });
+        }, 1500);
     },
 
     

@@ -110,6 +110,10 @@ App({
 
                     }
                 })
+            },
+            fail: res => {
+                debugger;
+                console.log(res);
             }
         })
 
@@ -145,6 +149,7 @@ App({
     },
     globalData: {
         userInfo: null,
+        openid: '',
         //serverHost: "http://localhost:19095",
         serverHost: "https://story.nasuf.cn",
         authorized: false

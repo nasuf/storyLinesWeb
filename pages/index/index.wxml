@@ -49,7 +49,7 @@
             </view>
         </view>
         <view class="weui-tab__content new" hidden="{{activeIndex != 2}}">
-            <button class="weui-btn authorize" type="normal" wx:if="{{!authorized}}"open-type="getUserInfo" bindgetuserinfo="userInfoHandler">点击授权</button>
+            <button class="weui-btn authorize" type="default" wx:if="{{!authorized}}"open-type="getUserInfo" bindgetuserinfo="userInfoHandler">点击授权</button>
             <view class="weui-toptips weui-toptips_warn" wx:if="{{showTopErrorTips}}">{{errorMsg}}</view>
             <view style="width: 100%">
                 <view class="weui-toptips weui-toptips_warn" wx:if="{{showTopErrorTips}}">{{errorMsg}}</view>
@@ -82,7 +82,7 @@
 
             <textarea class="textarea" cursor-spacing='100' bindinput="inputChange" data-key="content" maxlength='-1' value='{{phase.content}}' />
 
-            <button class="weui-btn publish" type="primary" bindtap="post">发布</button>
+            <button class="weui-btn publish" plain="true" bindtap="post">发布</button>
         </view>
     </view>
 </view>

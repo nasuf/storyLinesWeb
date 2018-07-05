@@ -32,6 +32,7 @@ Page({
      * 生命周期函数--监听页面加载
      */
     onLoad: function (options) {
+        debugger;
         var parentPhaseId = options.parentPhaseId;
         var title = options.title;
         wx.setNavigationBarTitle({
@@ -153,9 +154,24 @@ Page({
     onReachBottom: function () {
         var currentParentPhaseId = this.data.phases[this.data.phases.length-1].id;
         this.setData({
-            branchPhases: []
+            branchPhases: [],
+            swiperDisplay: false,
+            createBranchBtnDisplay: false
         })
         this.loadLine(currentParentPhaseId);
+    },
+
+    onShow: function() {
+        debugger;
+        if (this.data.phases.length > 0) {
+            var currentParentPhaseId = this.data.phases[this.data.phases.length - 1].id;
+            this.setData({
+                branchPhases: [],
+                swiperDisplay: false,
+                createBranchBtnDisplay: false
+            })
+            this.loadLine(currentParentPhaseId);
+        }
     },
 
     /**
