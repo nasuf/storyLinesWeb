@@ -3,7 +3,8 @@
         "pages/index/index",
         "pages/line/line",
         "pages/newPhase/newPhase",
-        "pages/newStory/newStory"
+        "pages/newStory/newStory",
+        "pages/user/index"
     ],
     "window": {
         "backgroundTextStyle": "light",
@@ -16,12 +17,16 @@
             {
                 "pagePath": "pages/index/index",
                 "position": "top",
-                "text": "首页"
+                "text": "首页",
+                "iconPath": "images/home-72.png",
+                "selectedIconPath": "images/home-72-selected.png"
             },
             {
-                "pagePath": "pages/newStory/newStory",
+                "pagePath": "pages/user/index",
                 "position": "top",
-                "text": "新故事线"
+                "text": "个人中心",
+                "iconPath": "images/user-72.png",
+                "selectedIconPath": "images/user-72-selected.png"
             }
         ]
     }

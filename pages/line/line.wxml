@@ -13,7 +13,7 @@
                 </view>
                 <view class="weui-media-box__info">
                     <view class="weui-media-box__info__meta" style="{{currentIndex < index ? blurStyle : ''}}">
-                        发布于：{{phase.createdDate}}
+                        {{phase.author}} 发布于：{{phase.createdDate}}
                     </view>
                     <view class="weui-media-box__info__meta has-branch-tag"  wx:if="{{phase.branchPhases && phase.branchPhases.length > 1}}">
                         有分支情节

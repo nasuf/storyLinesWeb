@@ -63,9 +63,6 @@ Page({
     },
 
     tabClick: function (e) {
-        if (!app.globalData.authorized) {
-            app.auth();
-        }
         this.setData({
             sliderOffset: e.currentTarget.offsetLeft,
             activeIndex: e.currentTarget.id,
@@ -132,7 +129,7 @@ Page({
         });
         wx.showNavigationBarLoading();
         wx.request({
-            url: app.globalData.serverHost + '/story/story?openid=' + app.globalData.openid + '&needAuth=' + _this.data.phase.needAuth + '&isNewStory=true&isPublic=' + _this.data.phase.isPublic + '&openid=',
+            url: app.globalData.serverHost + '/story/story?openid=' + app.globalData.openid + '&needAuth=' + _this.data.phase.needAuth + '&isNewStory=true&isPublic=' + _this.data.phase.isPublic,
             data: _this.data.phase,
             method: 'POST',
             success: function (res) {

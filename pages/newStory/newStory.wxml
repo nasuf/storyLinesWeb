@@ -7,7 +7,7 @@
                 <view class="weui-label">标题</view>
             </view>
             <view class="weui-cell__bd">
-                <input name="title" class="weui-input" placeholder="请输入标题" bindinput="inputChange" data-key="title" />
+                <input name="title" class="weui-input" placeholder="请输入标题" bindinput="inputChange" data-key="storyTitle" />
             </view>
         </view>
         <view class="weui-cell weui-cell_switch">

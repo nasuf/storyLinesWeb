@@ -1,0 +1,31 @@
+.userinfo {
+    display: flex;
+    flex-direction: row;
+    /* align-items: left; */
+    justify-content: flex-start; /*主轴上对齐方式 flex-start(左对齐) flex-end(右对齐) center(居中)  space-around(均衡排布) space-between(均衡排布 两端对齐)*/
+    align-items: center; /*交叉轴对齐方式 flex-start flex-start center stretch baseline(元素内的第一行文字对齐 )*/
+}
+
+.authorize-btn {
+    height: 35px;
+    width: 80px;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white !important;
+    border-color: blue !important;
+}
+
+.userinfo-avatar {
+    width: 120rpx;
+    height: 120rpx;
+    margin: 60rpx;
+    border-radius: 50%;
+}
+
+.userinfo-nickname {
+    color: #000;
+    font-size: 20px;
+    font-weight: bold;
+}

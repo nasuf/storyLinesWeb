@@ -5,7 +5,7 @@ App({
         
     },
 
-    auth: function () {
+    auth: function (url) {
         var _this = this;
         wx.getSetting({
             success: function (res) {
@@ -18,6 +18,9 @@ App({
                         success: function (res) {
                             if (res.confirm) {
                                 console.log('用户点击确定')
+                                wx.redirectTo({
+                                    url: url
+                                })
                             }
                         }
                     })
@@ -150,8 +153,8 @@ App({
     globalData: {
         userInfo: null,
         openid: '',
-        //serverHost: "http://localhost:19095",
-        serverHost: "https://story.nasuf.cn",
+        serverHost: "http://localhost:19095",
+        // serverHost: "https://story.nasuf.cn",
         authorized: false
     }
 })
