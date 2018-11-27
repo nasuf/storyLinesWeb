@@ -1,7 +1,6 @@
 //index.js
 //获取应用实例
 const app = getApp()
-var sliderWidth = 96;
 Page({
     data: {
         stories: [],
@@ -10,10 +9,7 @@ Page({
         sort: {
             lastUpdatedDate: 'DESC'
         },
-        tabs: ["最新", "推荐", "新故事线"],
         activeIndex: 0,
-        sliderOffset: 0,
-        sliderLeft: 0,
         authorized: false,
         phase: {
             isPublic: true,
@@ -23,6 +19,12 @@ Page({
         },
         showTopErrorTips: false,
         errorMsg: ""
+    },
+
+    handleChange({ detail }) {
+        this.setData({
+            current: detail.key
+        });
     },
     //事件处理函数
     bindViewTap: function () {
@@ -34,16 +36,8 @@ Page({
         this.setData({
             authorized: app.globalData.authorized
         })
-        this.loadData();
-        var _this = this;
-        wx.getSystemInfo({
-            success: function (res) {
-                _this.setData({
-                    sliderLeft: (res.windowWidth / _this.data.tabs.length - sliderWidth) / 2,
-                    sliderOffset: res.windowWidth / _this.data.tabs.length * _this.data.activeIndex
-                });
-            }
-        });
+        // this.loadData();
+        this.storyList = this.selectComponent('#storyList');
     },
 
     userInfoHandler: function (e) {
@@ -62,38 +56,6 @@ Page({
         }
     },
 
-    tabClick: function (e) {
-        this.setData({
-            sliderOffset: e.currentTarget.offsetLeft,
-            activeIndex: e.currentTarget.id,
-            authorized: app.globalData.authorized
-        });
-    },
-
-    loadData: function() {
-        wx.showLoading({
-            title: '加载中...',
-        })
-        var _this = this;
-        wx.request({
-            url: app.globalData.serverHost + '/story/story?pageNumber=' + this.data.pageNumber + '&pageSize=' + this.data.pageSize + '&sort=' + encodeURIComponent(JSON.stringify(this.data.sort)),
-            success: function (res) {
-                if (res.data.status == 'success') {
-                    var storyList = res.data.data;
-                    var storyArr = _this.data.stories;
-                    for (var i in storyList) {
-                        storyList[i].createdDate = app.formatDate(storyList[i].createdDate)
-                        storyArr.push(storyList[i]);
-                    }
-                    _this.setData({
-                        stories: storyArr,
-                        pageNumber: _this.data.pageNumber + 1
-                    })
-                    wx.hideLoading();
-                }
-            }
-        })
-    },
 
     onCheckDetail: function(e) {
         var id = e.currentTarget.dataset.id;

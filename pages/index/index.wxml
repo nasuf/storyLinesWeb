@@ -1,5 +1,10 @@
-<!--index.wxml-->
-<view class="weui-tab">
+<i-tabs current="{{ current }}" bindchange="handleChange">
+    <i-tab key="tab1" title="最新"></i-tab>
+    <i-tab key="tab2" title="推荐"></i-tab>
+    <i-tab key="tab3" title="新故事线"></i-tab>
+</i-tabs>
+<story-list id="storylist"></story-list>
+<!-- <view class="weui-tab">
     <view class="weui-navbar">
         <block wx:for="{{tabs}}" wx:key="*this">
             <view id="{{index}}" class="weui-navbar__item {{activeIndex == index ? 'weui-bar__item_on' : ''}}" bindtap="tabClick">
@@ -9,25 +14,7 @@
         <view class="weui-navbar__slider" style="left: {{sliderLeft}}px;  transform: translateX({{sliderOffset}}px); -webkit-transform: translateX({{sliderOffset}}px);"></view>
     </view>
     <view class="weui-tab__panel">
-        <!-- index tab -->
         <view class="weui-tab__content" hidden="{{activeIndex != 0}}">
-            <view class="item" wx:for="{{stories}}" wx:for-item="story">
-                <view class="weui-panel__bd" wx:if="{{!story.isDeleted}}" bindtap="onCheckDetail" data-id="{{story.id}}" data-title="{{story.storyTitle}}" hover-class="weui-cell_active">
-                    <view class="weui-media-box weui-media-box_text">
-                        <view class="weui-media-box__title weui-media-box__title_in-text">
-                            {{story.storyTitle}}
-                        </view>
-                        <view class="weui-media-box__desc">
-                            <text class="text" decode="{{true}}">
-                            {{story.content}}
-                        </text>
-                        </view>
-                        <view class="weui-media-box__info">
-                            <view class="weui-media-box__info__meta">{{(story.author + ' ' + story.isEnd? '发布于：' : '更新于：') + story.createdDate}}</view>
-                        </view>
-                    </view>
-                </view>
-            </view>
         </view>
         <view class="weui-tab__content" hidden="{{activeIndex != 1}}">
             <view class="item" wx:for="{{stories}}" wx:for-item="story">
@@ -85,4 +72,4 @@
             <button class="weui-btn publish" plain="true" bindtap="post">发布</button>
         </view>
     </view>
-</view>
+</view> -->

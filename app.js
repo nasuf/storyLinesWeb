@@ -153,8 +153,8 @@ App({
     globalData: {
         userInfo: null,
         openid: '',
-        serverHost: "http://localhost:19095",
-        // serverHost: "https://story.nasuf.cn",
+        // serverHost: "http://localhost:19095",
+        serverHost: "https://story.nasuf.cn",
         authorized: false
     }
 })
