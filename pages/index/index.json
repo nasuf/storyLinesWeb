@@ -6,8 +6,14 @@
     "enablePullDownRefresh": false,
     "usingComponents": {
         "story-list": "/components/storyList/storyList",
+        "new-story": "/components/newStory/newStory",
+        "user-index": "/components/user/index",
         "i-tabs": "../../dist/tabs/index",
         "i-tab": "../../dist/tab/index",
-        "i-card": "../../dist/card/index"
+        "i-card": "../../dist/card/index",
+        "i-tab-bar": "../../dist/tab-bar/index",
+        "i-tab-bar-item": "../../dist/tab-bar-item/index",
+        "i-message": "../../dist/message/index",
+        "i-toast": "../../dist/toast/index"
     }
 }

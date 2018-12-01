@@ -18,12 +18,19 @@ Page({
             content: ''
         },
         showTopErrorTips: false,
-        errorMsg: ""
+        errorMsg: "",
+        tab_top_current: 'tab1',
+        tab_bottom_current: 'homepage'
     },
 
-    handleChange({ detail }) {
+    handleTabTopChange({ detail }) {
         this.setData({
-            current: detail.key
+            tab_top_current: detail.key
+        });
+    },
+    handleTabBottomChange({ detail }) {
+        this.setData({
+            tab_bottom_current: detail.key
         });
     },
     //事件处理函数
@@ -32,10 +39,15 @@ Page({
             url: '../logs/logs'
         })
     },
-    onLoad: function () {
+    onLoad: function (options) {
         this.setData({
             authorized: app.globalData.authorized
         })
+        if (options && options.pathKey && options.pathValue) {
+            this.setData({
+                [options.pathKey]: options.pathValue
+            })
+        }
         // this.loadData();
         this.storyList = this.selectComponent('#storyList');
     },
@@ -57,13 +69,7 @@ Page({
     },
 
 
-    onCheckDetail: function(e) {
-        var id = e.currentTarget.dataset.id;
-        var title = e.currentTarget.dataset.title;
-        wx.navigateTo({
-            url: '../line/line?parentPhaseId=' + id + '&title=' + title
-        })
-    },
+    
 
     inputChange: function (e) {
         var key = 'phase.' + e.currentTarget.dataset.key;
@@ -143,6 +149,6 @@ Page({
     },
 
     onReachBottom: function() {
-        this.loadData();
+        // this.loadData();
     }
 })

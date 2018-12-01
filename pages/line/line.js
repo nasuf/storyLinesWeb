@@ -60,7 +60,7 @@ Page({
                     _this.setData({
                         phases: phasesArr,
                         init: false,
-                        swiperDisplay: _this.data.swiperDisplay ? false : false,
+                        // swiperDisplay: _this.data.swiperDisplay ? false : false,
                         blurStyle: '',
                         storyTitle: phasesArr[0].storyTitle
                     })
@@ -105,7 +105,8 @@ Page({
         this.setData({
             phases: phases,
             branchPhases: [],
-            createBranchBtnDisplay: !this.data.createBranchBtnDisplay
+            createBranchBtnDisplay: !this.data.createBranchBtnDisplay,
+            swiperDisplay: !this.data.swiperDisplay
         })
         this.loadLine(parentPhaseId);
     },
@@ -153,11 +154,11 @@ Page({
      */
     onReachBottom: function () {
         var currentParentPhaseId = this.data.phases[this.data.phases.length-1].id;
-        this.setData({
-            branchPhases: [],
-            swiperDisplay: false,
-            createBranchBtnDisplay: false
-        })
+        // this.setData({
+        //     branchPhases: [],
+        //     swiperDisplay: false,
+        //     createBranchBtnDisplay: false
+        // })
         this.loadLine(currentParentPhaseId);
     },
 

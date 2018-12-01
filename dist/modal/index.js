@@ -1,3 +1,4 @@
+const app = getApp();
 Component({
     externalClasses: ['i-class', 'i-class-mask'],
 
@@ -38,10 +39,24 @@ Component({
         }
     },
 
+    data: {
+        pathKey: '',
+        pathValue: ''
+    },
+
     methods: {
         handleClickItem ({ currentTarget = {} }) {
             const dataset = currentTarget.dataset || {};
             const { index } = dataset;
+            this.triggerEvent('click', { index });
+        },
+        handleAuthBtn ({ currentTarget = {} }) {
+            const dataset = currentTarget.dataset || {};
+            const { index } = dataset.index;
+            this.setData({
+                pathKey: dataset.pathkey,
+                pathValue: dataset.pathvalue
+            })
             this.triggerEvent('click', { index });
         },
         handleClickOk () {
@@ -49,6 +64,16 @@ Component({
         },
         handleClickCancel () {
             this.triggerEvent('cancel');
-        }
+        },
+        userInfoHandler: function (e) {
+            var userInfo = e.detail.userInfo;
+            if (userInfo != undefined) {
+                app.globalData.userInfo = userInfo
+                app.globalData.authorized = true;
+                wx.reLaunch({
+                    url: '../index/index?pathKey=' + this.data.pathKey + '&pathValue=' +  this.data.pathValue,
+                })
+            }
+        },
     }
 });

@@ -1,0 +1,7 @@
+{
+    "component": true,
+   "usingComponents": {
+    "i-alert": "../../dist/alert/index",
+    "i-modal": "../../dist/modal/index"
+   }
+}

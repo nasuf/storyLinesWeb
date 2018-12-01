@@ -1,23 +1,12 @@
 <view wx:for="{{stories}}" wx:for-item="story">
-    <i-card title="{{story.storyTitle}}">
-        <view slot="content">{{story.content}}</view>
-        <view slot="footer">{{(story.author + ' ' + story.isEnd? '发布于：' : '更新于：') + story.createdDate}}</view>
-    </i-card>
-    <!-- <view class="weui-panel">
-    <view class="weui-panel__bd" wx:if="{{!story.isDeleted}}" bindtap="onCheckDetail" data-id="{{story.id}}" data-title="{{story.storyTitle}}" hover-class="weui-cell_active">
-        <view class="weui-media-box weui-media-box_text">
-            <view class="weui-media-box__title weui-media-box__title_in-text">
-                {{story.storyTitle}}
-            </view>
-            <view class="weui-media-box__desc">
-                <text class="text" decode="{{true}}">
-                            {{story.content}}
-                        </text>
-            </view>
-            <view class="weui-media-box__info">
-                <view class="weui-media-box__info__meta">{{(story.author + ' ' + story.isEnd? '发布于：' : '更新于：') + story.createdDate}}</view>
-            </view>
+    <i-card title="{{story.storyTitle}}" data-index="{{index}}"
+    extra="false" extra_type="{{(story.likes && story.likes > 0)?'like_fill':'like'}}" likes="{{story.likes}}"
+    bindlikeevent="likeEventListener">
+        <view slot="content" bindtap="onCheckDetail" data-id="{{story.id}}" data-title="{{story.storyTitle}}">{{story.content}}</view>
+        <view slot="footer">
+            <i-avatar src="{{story.authorAvatarUrl}}" size="small"></i-avatar>
+            {{story.author + '    ' + story.createdDate}}
+            
         </view>
-    </view>
-    </view> -->
+    </i-card>
 </view>

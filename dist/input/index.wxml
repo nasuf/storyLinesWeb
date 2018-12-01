@@ -2,7 +2,7 @@
     <view wx:if="{{ title }}" class="i-cell-hd i-input-title">{{ title }}</view>
     <textarea
         wx:if="{{ type === 'textarea' }}"
-        auto-height
+        style="height: {{vHeight}}"
         disabled="{{ disabled }}"
         focus="{{ autofocus }}"
         value="{{ value }}"
@@ -13,6 +13,7 @@
         bindinput="handleInputChange"
         bindfocus="handleInputFocus"
         bindblur="handleInputBlur"
+        cursor-spacing="100"
     ></textarea>
     <input
         wx:else

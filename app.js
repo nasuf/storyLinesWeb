@@ -5,25 +5,20 @@ App({
         
     },
 
-    auth: function (url) {
+    auth: function () {
         var _this = this;
         wx.getSetting({
             success: function (res) {
                 // not authorized
                 if (!res.authSetting['scope.userInfo']) {
-                    wx.showModal({
-                        title: '用户未授权',
-                        content: '如需正常使用该小程序的全部功能，请允许我们获取您的已公开的微信用户信息（如微信昵称，头像等）。请点击授权按钮完成授权。谢谢配合。',
-                        showCancel: false,
-                        success: function (res) {
-                            if (res.confirm) {
-                                console.log('用户点击确定')
-                                wx.redirectTo({
-                                    url: url
-                                })
-                            }
-                        }
-                    })
+                    // wx.showModal({
+                    //     title: '用户未授权',
+                    //     content: '如需正常使用该小程序的全部功能，请允许我们获取您的已公开的微信用户信息（如微信昵称，头像等）。请点击授权按钮完成授权。谢谢配合。',
+                    //     showCancel: false,
+                    //     success: function (res) {
+                            
+                    //     }
+                    // })
                 } else {
                     // authorized
                     wx.getUserInfo({
@@ -74,10 +69,7 @@ App({
                 var _this = this;
                 // 发送 res.code 到后台换取 openId, sessionKey, unionId
                 console.log("entered login ")
-                wx.showLoading({
-                    title: '正在加载',
-                    icon: 'loading'
-                });
+                
                 wx.request({
                     url: _this.globalData.serverHost + '/auth/openid?code=' + res.code,
                     data: {},
@@ -115,7 +107,6 @@ App({
                 })
             },
             fail: res => {
-                debugger;
                 console.log(res);
             }
         })

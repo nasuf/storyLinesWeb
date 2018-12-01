@@ -1,0 +1,42 @@
+<i-alert type="warning" show-icon desc wx:if="{{!authorized}}" bindtap="authorize">
+    请点击此处进行授权操作
+    <view slot="desc">如需正常使用该小程序的全部功能，请允许我们获取您的已公开的微信用户信息（如微信昵称，头像等）。谢谢配合。</view>
+</i-alert>
+<i-modal visible="{{ authModalVisable }}" actions="{{ authActions }}" bind:click="handleAuth">
+    <view>请点击授权</view>
+</i-modal>
+<i-panel title="基本信息">
+    <i-input value="{{ phase.storyTitle }}" title="故事标题" data-key="storyTitle" bind:change="inputChange" autofocus placeholder="请输入标题" />
+    <i-cell-group>
+        <i-cell title="是否隐藏">
+            <i-switch value="{{ phase.isPrivate }}" bind:change="switchChange" data-key="isPrivate" slot="footer">
+                <i-icon type="right" slot="open"></i-icon>
+                <i-icon type="close" slot="close"></i-icon>
+            </i-switch>
+        </i-cell>
+        <i-cell title="后续情节是否需要本人审核">
+            <i-switch value="{{ phase.needAuth }}" bind:change="switchChange" data-key="needAuth" slot="footer">
+                <i-icon type="right" slot="open"></i-icon>
+                <i-icon type="close" slot="close"></i-icon>
+            </i-switch>
+        </i-cell>
+        <i-cell title="类别">
+            <view class="container" wx:if="{{tags == []}}">
+                <i-spin fix></i-spin>
+            </view>
+            <block wx:else>
+                <i-tag wx:for="{{tags}}" wx:for-item="tag" name="{{index}}" class="i-tags" color="{{tag.color}}" bindchange="tagClick" checkable="{{true}}" data-value="{{tag.value}}" type="border" checked="{{tag.checked}}">
+                    {{tag.value}}
+                </i-tag>
+            </block>
+            <i-input autofocus wx:if="{{otherTagClicked}}" value="{{ otherTag }}" data-key="otherTag" bind:change="inputChange" placeholder="请输入其他类别" />
+        </i-cell>
+    </i-cell-group>
+</i-panel>
+<i-panel title="内容">
+    <i-input type="textarea" value="{{phase.content}}" data-key="content" bind:change="inputChange" placeholder="请输入故事内容"></i-input>
+</i-panel>
+
+<i-button disabled="{{!authorized}}" i-class="publish-btn" fixed="true" bind:click="post" type="primary" shape="circle" loading="{{loading}}">
+    发布
+</i-button>

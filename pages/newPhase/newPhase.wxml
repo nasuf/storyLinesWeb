@@ -1,4 +1,24 @@
-<view class="weui-toptips weui-toptips_warn" wx:if="{{showTopErrorTips}}">{{errorMsg}}</view>
+<view class="panel" style="margin: 35px;">
+    <view class="branch-item" wx:if="{{!parentPhase.isDeleted}}" data-id="{{parentPhase.id}}" data-index="{{index}}" style="margin-right: 5px; margin-left: 5px">
+        <view style="padding: 15px">
+            <view style="font-size: 30rpx">
+                前文：
+            </view>
+            <text class="branch-text" decode="{{true}}" space="{{true}}" maxlength='-1'>
+                {{parentPhase.content}}
+            </text>
+        </view>
+    </view>
+</view>
+
+<textarea class="textarea" focus="true" cursor-spacing='100' bindinput="inputChange" data-key="info" placeholder="{{placeholder}}" maxlength='-1' value='{{newPhase.content}}' />
+
+<i-message id="message" />
+<button class="publish-btn" bindtap="post">发布</button>
+<!-- <i-button i-class="publish-btn" bind:click="post" type="primary" size="default">
+    发布
+</i-button> -->
+<!-- <view class="weui-toptips weui-toptips_warn" wx:if="{{showTopErrorTips}}">{{errorMsg}}</view>
 <view class="weui-media-box weui-media-box_text replied" style="margin: 35px;">
     <view class="branch-item weui-panel__bd" wx:if="{{!parentPhase.isDeleted}}" bindtap="onBranchTap" data-id="{{parentPhase.id}}" data-index="{{index}}" hover-class="weui-cell_active" style="margin-right: 5px; margin-left: 5px">
         <view class="weui-media-box weui-media-box_text">
@@ -16,7 +36,11 @@
 
 <textarea class="textarea" focus="true" cursor-spacing='100' bindinput="inputChange" data-key="info" placeholder="{{placeholder}}" maxlength='-1' value='{{newPhase.content}}' />
 
-<button class="weui-btn publish" type="primary" bindtap="post">发布</button>
+<i-button bind:click="post" type="primary" shape="circle" loading="{{loading}}">
+    发布
+</i-button>
+
+<button class="weui-btn publish" type="primary" bindtap="post">发布</button> -->
 <!-- <view class="weui-cells weui-cells_after-title textarea">
     <view class="weui-cell">
         <view class="weui-cell__bd">

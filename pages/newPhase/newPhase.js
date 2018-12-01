@@ -1,5 +1,6 @@
 // pages/newPhase/newPhase.js
 const app = getApp()
+const { $Message } = require('../../dist/base/index');
 Page({
 
     /**
@@ -12,7 +13,8 @@ Page({
         isNewStory: '',
         parentPhaseId: '',
         showTopErrorTips: false,
-        errorMsg: ''
+        errorMsg: '',
+        loading: false
     },
 
     /**
@@ -66,9 +68,12 @@ Page({
             title: '正在发布...',
             icon: 'loading',
         });
+        this.setData({
+            loading: true
+        })
         wx.showNavigationBarLoading();
         wx.request({
-            url: app.globalData.serverHost + '/story/story?openid=' + app.globalData.openid + '&isNewStory=false' + '&openid=' + app.globalData.openid + '&parentPhaseId=' + this.data.parentPhaseId + '&storyId=' + this.data.storyId,
+            url: app.globalData.serverHost + '/story/story?openid=' + app.globalData.openid + '&isNewStory=false' + '&parentPhaseId=' + this.data.parentPhaseId + '&storyId=' + this.data.storyId,
             data: _this.data.newPhase,
             method: 'POST',
             success: function (res) {
@@ -84,9 +89,9 @@ Page({
                                 wx.navigateBack({
                                     
                                 })
-                                // wx.redirectTo({
-                                //     url: '../index/index',
-                                // })
+                                _this.setData({
+                                    loading: false
+                                })
                             }, 1500);
                         }
                     });
@@ -99,8 +104,12 @@ Page({
     },
 
     validate: function () {
-        if (!this.data.newPhase.content) {
-            this.showTopErrorTips('请输入内容')
+        if (!this.data.newPhase.content || !this.data.newPhase.content.trim()) {
+            // this.showTopErrorTips('请输入内容')
+            $Message({
+                content: '内容不能为空',
+                type: 'warning'
+            });
             return false;
         }
         return true;

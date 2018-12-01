@@ -3,6 +3,10 @@ Component({
 
     externalClasses: ['i-class'],
 
+    data: {
+        vHeight: null
+    },
+
     properties: {
         title: {
             type: String
@@ -38,6 +42,9 @@ Component({
         },
         maxlength: {
             type: Number
+        },
+        singleline: {
+            type: Boolean
         }
     },
 
@@ -56,6 +63,19 @@ Component({
 
         handleInputBlur(event) {
             this.triggerEvent('blur', event);
+        }
+    },
+
+    lifetimes: {
+        attached: function() {
+            var _this = this;
+            wx.getSystemInfo({
+                success: function(res) {
+                    _this.setData({
+                        vHeight: res.windowHeight * 0.55 + 'rpx'
+                    })
+                }
+            })
         }
     }
 });

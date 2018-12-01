@@ -1,4 +1,109 @@
-<!-- <view class="container" > -->
+<scroll-view class="scroll-view" scroll-y style="height: 90%" bindscrolltolower="onReachBottom">
+    <view wx:for="{{phases}}" wx:for-item="phase">
+
+        <i-card title="{{index == 0 ? phase.storyTitle : ''}}" data-currentindex="{{currentIndex}}" wx:if="{{!phase.isDeleted}}" bindtap="onTap" data-id="{{phase.id}}" data-index="{{index}}" data-branchphases="{{phase.branchPhases}}">
+            <view slot="content">{{phase.content}}</view>
+            <view slot="footer">
+                <i-avatar style="vertical-align:middle" src="{{phase.authorAvatarUrl}}" size="small"></i-avatar>
+                {{phase.author + '    ' + phase.createdDate}}
+                <i-tag class="i-tags" type="border" color="yellow" wx:if="{{phase.branchPhases && phase.branchPhases.length > 1}}">
+                    有分支情节
+                </i-tag>
+            </view>
+        </i-card>
+
+        <i-button wx:if="{{currentIndex != 'initial' && currentIndex == index && createBranchBtnDisplay && currentIndex != (phases.length-1)}}" bindtap="onCreateBtnTap" type="primary" shape="circle" data-id="{{phase.id}}" data-title="{{phase.storyTitle}}">
+            由此创建新的分支情节
+        </i-button>
+
+        <!-- <swiper class="swiper" wx:if="{{currentIndex != 'initial' && currentIndex == index && phase.branchPhases && phase.branchPhases.length > 1 && swiperDisplay == true}}" indicator-dots="{{true}}"
+            circular="{{true}}" indicator-color="#dddee1" autoplay="{{false}}" interval="{{5000}}" duration="{{500}}" style="margin-top: -40px;">
+            <block wx:for="{{branchPhases}}" wx:for-item="branch" wx:for-index="branchindex">
+                <swiper-item>
+                    <i-card wx:if="{{!branch.isDeleted}}" bindtap="onBranchTap" data-id="{{branch.id}}" data-index="{{index}}" data-branchphases="{{phase.branchPhases}}" data-branchindex="{{branchindex}}" style="margin-right: 5px; margin-left: 5px">
+                        <view slot="content">
+                            <text class="branch-text" decode="{{true}}" space="{{true}}" maxlength='-1'>
+                            {{branch.content}}
+                        </text>
+                        </view>
+                    </i-card>
+                </swiper-item>
+            </block>
+        </swiper> -->
+        <swiper data-currentindex="{{currentIndex}}" data-index="{{index}}" class="swiper" wx:if="{{currentIndex != 'initial' && currentIndex == index && phase.branchPhases && phase.branchPhases.length > 1 && swiperDisplay == true && currentIndex != (phases.length-1)}}" indicator-dots="{{false}}"
+            style="margin-top: 10px; width: 100%;}}" circular="{{true}}" indicator-dots="{{true}}" indicator-color="white" autoplay="{{false}}" interval="{{5000}}" duration="{{500}}" bindchange="swiperChange">
+            <block wx:for="{{branchPhases}}" wx:for-item="branch" wx:for-index="branchindex">
+                <swiper-item class="swiper-item">
+                    <view class="branch-item weui-panel__bd" wx:if="{{!branch.isDeleted}}" bindtap="onBranchTap" data-id="{{branch.id}}" data-index="{{index}}" data-branchphases="{{phase.branchPhases}}" data-branchindex="{{branchindex}}" hover-class="weui-cell_active" style="margin-right: 5px; margin-left: 5px">
+                        <view class="weui-media-box weui-media-box_text">
+                            <view class="weui-media-box__desc">
+                                <text class="branch-text" decode="{{true}}" space="{{true}}" maxlength='-1'>
+                            {{branch.content}}
+                        </text>
+                            </view>
+                            <!-- <view class="weui-media-box__info">
+                                <view class="branch-meta weui-media-box__info__meta">
+                                    发布于：{{branch.createdDate}}
+                                </view>
+                            </view> -->
+                        </view>
+                    </view>
+                </swiper-item>
+            </block>
+        </swiper>
+    </view>
+</scroll-view>
+<i-button type="primary" bind:click="publishTap">由文末续写</i-button>
+<!-- <view class="item" wx:for="{{phases}}" wx:for-item="phase">
+        <view data-currentindex="{{currentIndex}}" class="weui-panel__bd" wx:if="{{!phase.isDeleted}}" bindtap="onTap" data-id="{{phase.id}}" data-index="{{index}}" data-branchphases="{{phase.branchPhases}}" hover-class="weui-cell_active">
+            <view class="weui-media-box weui-media-box_text">
+                <view wx:if="{{index == 0}}" class="weui-media-box__title weui-media-box__title_in-text">
+                    {{phase.storyTitle}}
+                </view>
+                <view class="weui-media-box__desc">
+                    <text class="text" style="{{currentIndex < index ? blurStyle : ''}}" decode="{{true}}" space="{{true}}" maxlength='-1'>
+                            {{phase.content}}
+                        </text>
+                </view>
+                <view class="weui-media-box__info">
+                    <view class="weui-media-box__info__meta" style="{{currentIndex < index ? blurStyle : ''}}">
+                        {{phase.author}} 发布于：{{phase.createdDate}}
+                    </view>
+                    <view class="weui-media-box__info__meta has-branch-tag"  wx:if="{{phase.branchPhases && phase.branchPhases.length > 1}}">
+                        有分支情节
+                    </view>
+                </view>
+            </view>
+        </view>
+
+        <button class="weui-btn btn" type="primary" wx:if="{{currentIndex != 'initial' && currentIndex == index && createBranchBtnDisplay}}" bindtap="onCreateBtnTap" data-id="{{phase.id}}" data-title="{{phase.storyTitle}}">由此创建新的分支情节</button>
+
+        <swiper data-currentindex="{{currentIndex}}" data-index="{{index}}" class="swiper" wx:if="{{currentIndex != 'initial' && currentIndex == index && phase.branchPhases && phase.branchPhases.length > 1 && swiperDisplay == true}}" indicator-dots="{{false}}"
+            style="margin-top: 10px; width: 100%;}}" circular="{{true}}" indicator-dots="{{true}}" indicator-color="white" autoplay="{{false}}" interval="{{5000}}" duration="{{500}}" bindchange="swiperChange">
+            <block wx:for="{{branchPhases}}" wx:for-item="branch" wx:for-index="branchindex">
+                <swiper-item class="swiper-item">
+                    <view class="branch-item weui-panel__bd" wx:if="{{!branch.isDeleted}}" bindtap="onBranchTap" data-id="{{branch.id}}" data-index="{{index}}" data-branchphases="{{phase.branchPhases}}" data-branchindex="{{branchindex}}" hover-class="weui-cell_active" style="margin-right: 5px; margin-left: 5px">
+                        <view class="weui-media-box weui-media-box_text">
+                            <view class="weui-media-box__desc">
+                                <text class="branch-text" decode="{{true}}" space="{{true}}" maxlength='-1'>
+                            {{branch.content}}
+                        </text>
+                            </view>
+                            <view class="weui-media-box__info">
+                                <view class="branch-meta weui-media-box__info__meta">
+                                    发布于：{{branch.createdDate}}
+                                </view>
+                            </view>
+                        </view>
+                    </view>
+                </swiper-item>
+            </block>
+        </swiper>
+    </view> -->
+
+<!-- <button class="weui-btn publish-btn" plain="true" bindtap="publishTap">由文末续写</button> -->
+
+<!-- 
 <scroll-view class="scroll-view" scroll-y style="height: 90%" bindscrolltolower="onReachBottom">
     <view class="item" wx:for="{{phases}}" wx:for-item="phase">
         <view data-currentindex="{{currentIndex}}" class="weui-panel__bd" wx:if="{{!phase.isDeleted}}" bindtap="onTap" data-id="{{phase.id}}" data-index="{{index}}" data-branchphases="{{phase.branchPhases}}" hover-class="weui-cell_active">
@@ -48,5 +153,4 @@
     </view>
 </scroll-view>
 
-<button class="weui-btn publish-btn" plain="true" bindtap="publishTap">由文末续写</button>
-<!-- </view> -->
+<button class="weui-btn publish-btn" plain="true" bindtap="publishTap">由文末续写</button> -->

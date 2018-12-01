@@ -1,4 +1,4 @@
-/**index.wxss**/
+/* *index.wxss*
 
 page {
     background-color: #f5f5f5;
@@ -14,11 +14,6 @@ page {
     padding-bottom: 0 !important;
 }
 
-.scroll-view {
-    width: 100%;
-    margin-left: 2%;
-    margin-right: 2%
-}
 
 .item {
     width: 95%;
@@ -46,9 +41,6 @@ page {
     overflow: hidden !important;
     -webkit-box-orient: vertical !important;
     line-height: 20px;
-    /* color: transparent;
-  text-shadow: 0 0 15px #666;
-  transition: text-shadow 2s cubic-bezier(0, 1, 0, 1); */
 }
 
 .branch-text {
@@ -124,4 +116,25 @@ page {
     border-color: #EEEED1 !important;
     font-weight: bolder;
 }
-
+ */
+ 
+.branch-text {
+    display: -webkit-box !important;
+    word-break: normal !important;
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 4 !important;
+    line-height: 20px;
+    color: gray;
+}
+.branch-item {
+    background-color: #ececec;
+    border-radius: 10px;
+}
+/* page {
+    height: 100%
+} */
+.scroll-view {
+    height: 95%
+}

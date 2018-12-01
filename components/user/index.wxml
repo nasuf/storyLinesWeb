@@ -1,0 +1,21 @@
+<i-alert type="warning" show-icon desc wx:if="{{!authorized}}" bindtap="authorize">
+    请点击此处进行授权操作
+    <view slot="desc">如需正常使用该小程序的全部功能，请允许我们获取您的已公开的微信用户信息（如微信昵称，头像等）。谢谢配合。</view>
+</i-alert>
+<i-modal visible="{{ authModalVisable }}" actions="{{ authActions }}" bind:click="handleAuth">
+    <view>请点击授权</view>
+</i-modal>
+
+<view class="userinfo">
+    <view wx:if="{{!authorized}}" open-type="getUserInfo" bindgetuserinfo="userInfoHandler">
+        <image class="userinfo-avatar" src="../../images/un_authorized.png" background-size="cover"></image>
+    </view>
+    <block wx:else>
+        <image bindtap="openActionSheet" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover"></image>
+    </block>
+    <view>
+        <!-- <button class="authorize-btn" wx:if="{{!authorized}}" open-type="getUserInfo" bindgetuserinfo="userInfoHandler">点击授权</button> -->
+        <text class="userinfo-nickname">{{authorized ? userInfo.nickName : '未授权用户'}}</text>
+    </view>
+
+</view>
