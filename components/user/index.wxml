@@ -17,5 +17,21 @@
         <!-- <button class="authorize-btn" wx:if="{{!authorized}}" open-type="getUserInfo" bindgetuserinfo="userInfoHandler">点击授权</button> -->
         <text class="userinfo-nickname">{{authorized ? userInfo.nickName : '未授权用户'}}</text>
     </view>
-
 </view>
+<view class="top-btn-view">
+    <button class="type-btn" style="{{storyLineBtnStyle}}" plain="true" data-type="myStoryLines" bindtap="onModuleTap">我的故事线</button>
+    <button class="type-btn" style="{{continuesBtnStyle}}" plain="true" data-type="myContinues" bindtap="onModuleTap">我的续写</button>
+    <!-- <button class="type-btn" style="{{privateMsgBtnStyle}}" plain="true" data-type="PRIVATEMSG" bindtap="onModuleTap">私信</button> -->
+    <button wx:if="{{role == 'ADMIN'}}" class="weui-btn type-btn" style="{{adminBtnStyle}}" plain="true" data-type="ADMIN" bindtap="onModuleTap">管理员</button>
+</view>
+
+<!-- <scroll-view scroll-y style="height: 88%; margin-bottom: 10px"> -->
+<i-cell-group i-class="list" wx:if="{{storyLineBtnClicked}}">
+    <i-cell i-class="story-item" wx:for="{{stories}}" wx:for-item="story" title="{{story.storyTitle}}" label="{{story.content}}" is-link bindtap="onCheckDetail" data-id="{{story.id}}" data-title="{{story.storyTitle}}"></i-cell>
+</i-cell-group>
+<i-cell-group i-class="list" wx:if="{{continuesBtnClicked}}">
+    <i-cell i-class="story-item" wx:for="{{phases}}" wx:for-item="phase" title="{{phase.storyTitle}}" label="{{phase.content}}" is-link bindtap="onCheckDetail" data-id="{{phase.id}}" data-title="{{phase.storyTitle}}"></i-cell>
+</i-cell-group>
+<i-load-more wx:if="{{ loading }}" loading="{{ loading }}" />
+<i-load-more wx:if="{{ !loading }}" tip="只有这些啦~" loading="{{false}}"/> 
+<!-- </scroll-view> -->

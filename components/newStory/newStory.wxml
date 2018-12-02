@@ -24,12 +24,13 @@
             <view class="container" wx:if="{{tags == []}}">
                 <i-spin fix></i-spin>
             </view>
-            <block wx:else>
+            <i-input autofocus wx:if="{{otherTagClicked}}" value="{{ otherTags }}" data-key="otherTags" bind:inputconfirm="otherTagInputConfirm" bind:change="inputChange" placeholder="请输入其他类别" />
+            <block wx:if="{{tags}}">
                 <i-tag wx:for="{{tags}}" wx:for-item="tag" name="{{index}}" class="i-tags" color="{{tag.color}}" bindchange="tagClick" checkable="{{true}}" data-value="{{tag.value}}" type="border" checked="{{tag.checked}}">
                     {{tag.value}}
                 </i-tag>
             </block>
-            <i-input autofocus wx:if="{{otherTagClicked}}" value="{{ otherTag }}" data-key="otherTag" bind:change="inputChange" placeholder="请输入其他类别" />
+            
         </i-cell>
     </i-cell-group>
 </i-panel>

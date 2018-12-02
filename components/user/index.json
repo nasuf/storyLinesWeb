@@ -2,6 +2,9 @@
     "component": true,
    "usingComponents": {
     "i-alert": "../../dist/alert/index",
-    "i-modal": "../../dist/modal/index"
+    "i-modal": "../../dist/modal/index",
+    "i-cell-group": "../../dist/cell-group/index",
+    "i-cell": "../../dist/cell/index",
+    "i-load-more": "../../dist/load-more/index"
    }
 }

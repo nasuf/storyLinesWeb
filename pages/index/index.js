@@ -20,7 +20,8 @@ Page({
         showTopErrorTips: false,
         errorMsg: "",
         tab_top_current: 'tab1',
-        tab_bottom_current: 'homepage'
+        tab_bottom_current: 'homepage',
+        needLoadMoreStories: false
     },
 
     handleTabTopChange({ detail }) {
@@ -148,7 +149,12 @@ Page({
         }, 1500);
     },
 
-    onReachBottom: function() {
-        // this.loadData();
+    onScrollReachBottomOfStoryList: function() {
+        this.selectComponent('#storylist').loadStories();
+    },
+
+    onScrollReachBottomOfUserList: function() {
+        var component = this.selectComponent('#userList');
+        component.loadUserPosts(component.data.storyLineBtnClicked);
     }
 })

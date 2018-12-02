@@ -28,5 +28,6 @@
         bindinput="handleInputChange"
         bindfocus="handleInputFocus"
         bindblur="handleInputBlur"
+        bindconfirm="handleConfirm"
     />
 </view>

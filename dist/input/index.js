@@ -63,6 +63,10 @@ Component({
 
         handleInputBlur(event) {
             this.triggerEvent('blur', event);
+        },
+
+        handleConfirm(event) {
+            this.triggerEvent('inputconfirm', event);
         }
     },
 

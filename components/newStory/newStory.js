@@ -24,7 +24,7 @@ Component({
         loading: false,
         tags: [],
         otherTagClicked: false,
-        otherTag: '',
+        otherTags: [],
         authorized: false,
         authModalVisable: false,
         authActions: [
@@ -46,10 +46,10 @@ Component({
      */
     methods: {
         inputChange: function (e) {
-            if (e.currentTarget.dataset.key == 'otherTag') {
-                this.setData({
-                    otherTag: e.detail.detail.value
-                })
+            if (e.currentTarget.dataset.key == 'otherTags') {
+                // this.setData({
+                //     otherTag: e.detail.detail.value
+                // })
             } else {
                 var key = 'phase.' + e.currentTarget.dataset.key;
                 this.setData({
@@ -66,6 +66,37 @@ Component({
             })
         },
 
+        otherTagInputConfirm: function(e) {
+            var _this = this;
+            var newTagValue = e.detail.detail.value;
+            var tmpTags = this.data.tags;
+            if (newTagValue && newTagValue.trim()) {
+                var isNewTag = true
+                for (var i in tmpTags) {
+                    if (tmpTags[i].value == newTagValue) {
+                        isNewTag = false;
+                    }
+                }
+                if (isNewTag) {
+                    var newTag = {
+                        value: newTagValue,
+                        color: 'yellow',
+                        checked: 'true'
+                    };
+                    tmpTags.push(newTag);
+                    this.setData({
+                        tags: []
+                    })
+                    var existedPhaseTags = this.data.phase.tags;
+                    existedPhaseTags.push(newTagValue);
+                    this.setData({
+                        tags: tmpTags,
+                        ['phase.tags']: existedPhaseTags
+                    })
+                }
+            }
+        },
+
         post: function () {
             var _this = this;
             var validated = this.validate();
@@ -75,13 +106,7 @@ Component({
                 title: '正在发布...',
                 icon: 'loading',
             });
-            if (this.data.otherTag && this.data.otherTag.trim()) {
-                var tmpTags = this.data.phase.tags;
-                tmpTags.push(this.data.otherTag);
-                this.setData({
-                    ['phase.tags']: tmpTags
-                })
-            }
+           
             this.setData({
                 loading: true,
             })
@@ -192,7 +217,6 @@ Component({
                     _this.setData({
                         tags: res.data.data
                     })
-                    console.log('tt')
                 }
             })
         }

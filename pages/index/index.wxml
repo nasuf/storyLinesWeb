@@ -5,14 +5,15 @@
         <i-tab key="tab2" title="推荐"></i-tab>
         <i-tab key="tab3" title="新故事线"></i-tab>
     </i-tabs>
-    <scroll-view wx:if="{{tab_top_current == 'tab1' || tab_top_current == 'tab2'}}" scroll-y style="height: 85%; margin-bottom: 50px">
-    <story-list id="storylist"></story-list>
+    <scroll-view wx:if="{{tab_top_current == 'tab1' || tab_top_current == 'tab2'}}" scroll-y style="height: 85%; margin-bottom: 50px" bindscrolltolower="onScrollReachBottomOfStoryList">
+        <story-list id="storylist"></story-list>
     </scroll-view>
     <new-story wx:if="{{tab_top_current == 'tab3'}}"></new-story>
 </block>
 
-
-<user-index wx:else></user-index>
+<scroll-view wx:else scroll-y style="height: 93%; margin-bottom: 10px" bindscrolltolower="onScrollReachBottomOfUserList">
+    <user-index id="userList"></user-index>
+</scroll-view>
 
 <i-tab-bar i-class="tabbar" wx:if="{{tab_top_current != 'tab3'}}" current="{{ tab_bottom_current }}" bindchange="handleTabBottomChange" fixed="true">
     <i-tab-bar-item key="homepage" icon="homepage" current-icon="homepage_fill" title="Home"></i-tab-bar-item>

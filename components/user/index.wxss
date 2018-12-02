@@ -29,3 +29,31 @@
     font-size: 20px;
     font-weight: bold;
 }
+
+.top-btn-view {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: baseline;
+    /* height: 10%; */
+    
+}
+
+.type-btn {
+    height: 35px;
+    width: 50%;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f5f5 !important;
+    border-color: #f5f5f5 !important;
+    border-right: 0px solid gainsboro !important;
+    border-bottom: 1px solid #f5f5f5 !important;
+    /* border-bottom: 1px solid gainsboro !important; */
+    border-radius: 0;
+}
+
+.story-item {
+    
+}

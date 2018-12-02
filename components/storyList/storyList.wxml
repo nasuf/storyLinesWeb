@@ -6,7 +6,8 @@
         <view slot="footer">
             <i-avatar src="{{story.authorAvatarUrl}}" size="small"></i-avatar>
             {{story.author + '    ' + story.createdDate}}
-            
         </view>
     </i-card>
 </view>
+<i-load-more wx:if="{{ loading }}" loading="{{ loading }}" />
+<i-load-more wx:if="{{ !loading }}" tip="到底啦~要不您去戳戳右上角再写点儿？" loading="{{false}}"/> 
