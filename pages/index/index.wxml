@@ -1,11 +1,11 @@
 <block class="container">
 <block wx:if="{{tab_bottom_current === 'homepage'}}">    
     <i-tabs current="{{ tab_top_current }}" bindchange="handleTabTopChange">
-        <i-tab key="tab1" title="最新"></i-tab>
+        <i-tab key="tab1" title="最新" dot="{{tab_top_dot}}" bindtap="{{onNewTabTopClicked}}"></i-tab>
         <i-tab key="tab2" title="推荐"></i-tab>
         <i-tab key="tab3" title="新故事线"></i-tab>
     </i-tabs>
-    <scroll-view wx:if="{{tab_top_current == 'tab1' || tab_top_current == 'tab2'}}" scroll-y style="height: 85%; margin-bottom: 50px" bindscrolltolower="onScrollReachBottomOfStoryList">
+    <scroll-view wx:if="{{tab_top_current == 'tab1' || tab_top_current == 'tab2'}}" scroll-y style="height: 85%; margin-bottom: 50px" bindscrolltolower="onScrollReachBottomOfStoryList" enable-back-to-top="{{true}}">
         <story-list id="storylist"></story-list>
     </scroll-view>
     <new-story wx:if="{{tab_top_current == 'tab3'}}"></new-story>
@@ -17,7 +17,7 @@
 
 <i-tab-bar i-class="tabbar" wx:if="{{tab_top_current != 'tab3'}}" current="{{ tab_bottom_current }}" bindchange="handleTabBottomChange" fixed="true">
     <i-tab-bar-item key="homepage" icon="homepage" current-icon="homepage_fill" title="Home"></i-tab-bar-item>
-    <i-tab-bar-item key="mine" icon="mine" current-icon="mine_fill" title="My"></i-tab-bar-item>
+    <i-tab-bar-item key="mine" dot="{{tab_bottom_dot}}" icon="mine" current-icon="mine_fill" title="My"></i-tab-bar-item>
 </i-tab-bar>
 
 <i-message id="message" />

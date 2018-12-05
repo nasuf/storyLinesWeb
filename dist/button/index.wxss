@@ -102,8 +102,8 @@
 }
 
 .i-btn-disabled {
-    color: #bbbec4 !important;
-    background: #f7f7f7 !important;
+    color: white !important;
+    background: #84adda !important;
 }
 
 .i-btn-inline {

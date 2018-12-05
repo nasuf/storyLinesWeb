@@ -14,22 +14,95 @@ Component({
   data: {
       stories: [],
       pageNumber: 0,
-      pageSize: 5,
+      pageSize: 25,
       sort: {
-          createdDate: 'DESC'
+          lastUpdatedDate: 'DESC'
       },
-      loading: true
+      loading: true,
+      tags: [],
+      selectedTags: []
   },
 
   lifetimes: {
     attached: function() {
-        this.loadStories()
+        this.loadStories([], true);
+        this.loadTags();
     }
   },
   /**
    * 组件的方法列表
    */
   methods: {
+
+      loadTags: function () {
+          var _this = this;
+          wx.request({
+              url: app.globalData.serverHost + '/story/loadTags',
+              method: 'GET',
+              success: function (res) {
+                  var tags = res.data.data;
+                  for (var i in tags) {
+                      if (tags[i].value == '全部') {
+                          tags[i].checked = true
+                      }
+                  }
+                  _this.setData({
+                      tags: res.data.data
+                  })
+              }
+          })
+      },
+
+      tagClick: function (e) {
+          const detail = e.detail;
+          var value = e.currentTarget.dataset.value;
+          var selectedTags = this.data.selectedTags;
+          var allTags = this.data.tags;
+          var tmpTags = [];
+          this.setData({
+              ['tags[' + e.detail.name + '].checked']: detail.checked
+          })
+          if (value == '全部') {
+              // set 'all' tags to checked
+            //   this.setData({
+            //       ['tags[0].checked']: true
+            //   })
+              // set 'non-all' tags to unchecked
+              for (var i=1; i<allTags.length; i++) {
+                  allTags[i].checked = false;
+              }
+              this.setData({
+                  tags: allTags
+              })
+          } else if (selectedTags.indexOf(value) != -1) {
+              // exists, then remove it
+              for (var i in selectedTags) {
+                  if (selectedTags[i] != value)
+                      tmpTags.push(selectedTags[i])
+              }
+          } else {
+              // not exists, then add it
+              tmpTags = selectedTags;
+              tmpTags.push(value);
+          }
+          // process 'all' tags
+          if (tmpTags.length > 0) {
+              this.setData({
+                  ['tags[0].checked']: false
+              })
+          } else if (tmpTags.length == 0 && value != '全部') {
+              // no tags selected
+              this.setData({
+                  ['tags[0].checked']: true
+              })
+          }
+          this.setData({
+              selectedTags: tmpTags,
+              pageNumber: 0,
+              stories: []
+          })
+          this.loadStories(this.data.selectedTags, true);
+      },
 
       onCheckDetail: function (e) {
           var id = e.currentTarget.dataset.id;
@@ -49,17 +122,23 @@ Component({
           })
       },
 
-      loadStories: function() {
+      loadStories: function(tags, isInit) {
         //   $Toast({
         //       content: '加载中',
         //       type: 'loading'
         //   });
-          this.setData({
-              loading: true
-          })
+        //   wx.showNavigationBarLoading();
+          if (isInit) {
+              this.setData({
+                  loading: true,
+                  stories: [],
+                  pageNumber: 0
+              })
+          }
           var _this = this;
+          var url = app.globalData.serverHost + '/story/story' + (((tags != undefined && tags.length != 0) || (this.data.tags && this.data.tags.length > 0 && this.data.tags[0].checked == false)) ? '/filtered' : '') + '?pageNumber=' + this.data.pageNumber + '&pageSize=' + this.data.pageSize + '&sort=' + encodeURIComponent(JSON.stringify(this.data.sort)) + ((tags != undefined && tags.length != 0) ? ('&tags=' + tags) : '');
           wx.request({
-              url: app.globalData.serverHost + '/story/story?pageNumber=' + this.data.pageNumber + '&pageSize=' + this.data.pageSize + '&sort=' + encodeURIComponent(JSON.stringify(this.data.sort)),
+              url: url,
               success: function (res) {
                   if (res.data.status == 'success') {
                       var storyList = res.data.data;
@@ -73,6 +152,8 @@ Component({
                           pageNumber: _this.data.pageNumber + 1,
                           loading: false
                       })
+                      wx.stopPullDownRefresh();
+                    //   wx.hideNavigationBarLoading();
                     //   $Toast.hide();
                   }
               }

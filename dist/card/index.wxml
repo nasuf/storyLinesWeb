@@ -4,11 +4,12 @@
             <image class="i-card-header-thumb" src="{{ thumb }}" mode="aspectFit" wx:if="{{ thumb }}" />
             {{ title }}
         </view>
-        <view class="i-card-header-extra" wx:if="{{ extra === 'true' }}">
-            <i-icon type="{{ extra_type }}" size="20" color="{{ extra_color }}" bindtap="onTap"/> 
-            {{(likes > 0 ? (likes > 1 ? (likes + ' likes') : '1 like') : '')}} 
-        </view>
+        <view class="i-card-header-extra" wx:if="{{ extra }}">{{ extra }}</view>
     </view>
     <view class="i-class i-card-body"><slot name="content"></slot></view>
-    <view class="i-class i-card-footer"><slot name="footer"></slot></view>
+    <!-- <view class="i-class i-card-footer"><slot name="footer"></slot></view> -->
+    <view class="i-class i-card-footer">
+        <view class="i-card-footer-left"><slot name="footer-left"></slot></view>
+        <view class="i-card-footer-right"><slot name="footer-right"></slot></view>
+    </view>
 </view>

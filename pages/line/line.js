@@ -7,8 +7,9 @@ Page({
      */
     data: {
         parentPhaseId: '',
+        rootPhaseId: '',
         pageNumber: 0,
-        pageSize: 15,
+        pageSize: 25,
         childPhasesPageSize: 15,
         sort: {
             like: 'DESC'
@@ -25,7 +26,9 @@ Page({
         prevParentPhaseId: '',
 
         swiperDisplay: false,
-        createBranchBtnDisplay: false
+        createBranchBtnDisplay: false,
+        loading: false,
+        openid: ''
     },
 
     /**
@@ -39,21 +42,25 @@ Page({
         })
         this.setData({
             parentPhaseId: parentPhaseId,
-            title: title
+            rootPhaseId: parentPhaseId,
+            title: title,
+            openid: app.globalData.openid
         })
-        this.loadLine(parentPhaseId);
+        this.loadLine(parentPhaseId, true);
     },
 
-    loadLine: function (parentPhaseId) {
+    loadLine: function (parentPhaseId, needIncReviewCount) {
         var _this = this;
+        wx.showNavigationBarLoading();
         wx.request({
-            url: app.globalData.serverHost + '/story/story/phases/' + parentPhaseId + '?pageNumber=' + this.data.pageNumber + '&pageSize=' + this.data.pageSize + '&childPhasesPageSize=' + this.data.childPhasesPageSize + '&sort=' + encodeURIComponent(JSON.stringify(this.data.sort)) + '&init=' + this.data.init,
+            url: app.globalData.serverHost + '/story/story/phases/' + parentPhaseId + '?pageNumber=' + this.data.pageNumber + '&pageSize=' + this.data.pageSize + '&childPhasesPageSize=' + this.data.childPhasesPageSize + '&sort=' + encodeURIComponent(JSON.stringify(this.data.sort)) + '&init=' + this.data.init + '&needIncReviewCount=' + needIncReviewCount,
             success: function(res) {
                 if (res.data.status == 'success') {
                     var phases = res.data.data;
                     var phasesArr = _this.data.phases;
                     for (var i in phases) {
                         phases[i].createdDate = app.formatDate(phases[i].createdDate);
+                        phases[i].likeShapeFilled = (phases[i].likesUsers && phases[i].likesUsers.indexOf(_this.data.openid) != -1) ? true : false;
                         phasesArr.push(phases[i]);
                     }
                     _this.setData({
@@ -63,6 +70,7 @@ Page({
                         blurStyle: '',
                         storyTitle: phasesArr[0].storyTitle
                     })
+                    wx.hideNavigationBarLoading();
                 }
             }
         })
@@ -107,7 +115,7 @@ Page({
             createBranchBtnDisplay: !this.data.createBranchBtnDisplay,
             swiperDisplay: !this.data.swiperDisplay
         })
-        this.loadLine(parentPhaseId);
+        this.loadLine(parentPhaseId, false);
     },
 
     loadBranches: function(parentPhaseId) {
@@ -135,7 +143,7 @@ Page({
         var title = e.currentTarget.dataset.title;
         var storyId = this.data.phases[this.data.phases.length-1].storyId;
         wx.navigateTo({
-            url: '../newPhase/newPhase?parentPhaseId=' + id + '&title=' + title + '&isNewStory=false&storyId=' + storyId
+            url: '../newPhase/newPhase?rootPhaseId=' + this.data.rootPhaseId + '&parentPhaseId=' + id + '&title=' + title + '&isNewStory=false&storyId=' + storyId
         })
     },
 
@@ -144,7 +152,7 @@ Page({
         var storyId = this.data.phases[this.data.phases.length - 1].storyId;
         var title = this.data.title;
         wx.navigateTo({
-            url: '../newPhase/newPhase?parentPhaseId=' + lastPhaseId + '&title=' + title + '&isNewStory=false&storyId=' + storyId
+            url: '../newPhase/newPhase?rootPhaseId=' + this.data.rootPhaseId + '&parentPhaseId=' + lastPhaseId + '&title=' + title + '&isNewStory=false&storyId=' + storyId
         })
     },
 
@@ -158,7 +166,7 @@ Page({
         //     swiperDisplay: false,
         //     createBranchBtnDisplay: false
         // })
-        this.loadLine(currentParentPhaseId);
+        this.loadLine(currentParentPhaseId, false);
     },
 
     onShow: function() {
@@ -169,8 +177,48 @@ Page({
                 swiperDisplay: false,
                 createBranchBtnDisplay: false
             })
-            this.loadLine(currentParentPhaseId);
+            this.loadLine(currentParentPhaseId, false);
         }
+    },
+
+    likeClicked: function (e) {
+        console.log('like!');
+        var _this = this;
+        var index = e.currentTarget.dataset.index;
+        var update = "phases[" + index + "].likes";
+        var update_like_shape = "phases[" + index + "].likeShapeFilled";
+        var likesUsers = this.data.phases[index].likesUsers;
+        var phase = this.data.phases[index];
+        if (!phase.likeShapeFilled) {
+            // user hasn't liked this phase
+            if(!phase.likesUsers) {
+                phase.likesUsers = [];
+            }
+            phase.likesUsers.push(this.data.openid);
+            phase.likes = (!phase.likes || phase.likes == 0) ? 1 : ++phase.likes;
+        } else {
+            // user has liked this phase
+            var tmpLikesUsers = [];
+            for(var i in phase.likesUsers) {
+                if (phase.likesUsers[i] != this.data.openid) {
+                    tmpLikesUsers.push(phase.likesUsers[i]);
+                }
+            }
+            phase.likesUsers = tmpLikesUsers;
+            phase.likes = --phase.likes;
+        }
+        phase.likeShapeFilled = !phase.likeShapeFilled;
+        this.setData({
+            ['phases[' + index + ']']: phase
+        })
+
+        wx.request({
+            url: app.globalData.serverHost + '/story/ratePhase?phaseId=' + phase.id + '&like=' + (phase.likeShapeFilled) + '&openid=' + this.data.openid,
+            method: 'GET',
+            success: function(res) {
+                console.log('success rate!');
+            }
+        })
     },
 
     /**

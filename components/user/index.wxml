@@ -27,11 +27,11 @@
 
 <!-- <scroll-view scroll-y style="height: 88%; margin-bottom: 10px"> -->
 <i-cell-group i-class="list" wx:if="{{storyLineBtnClicked}}">
-    <i-cell i-class="story-item" wx:for="{{stories}}" wx:for-item="story" title="{{story.storyTitle}}" label="{{story.content}}" is-link bindtap="onCheckDetail" data-id="{{story.id}}" data-title="{{story.storyTitle}}"></i-cell>
+    <i-cell needHover="{{true}}" i-class="story-item" wx:for="{{stories}}" wx:for-item="story" title="{{story.storyTitle}}" label="{{story.content}}" is-link bindtap="onCheckDetail" data-id="{{story.id}}" data-title="{{story.storyTitle}}"></i-cell>
 </i-cell-group>
 <i-cell-group i-class="list" wx:if="{{continuesBtnClicked}}">
-    <i-cell i-class="story-item" wx:for="{{phases}}" wx:for-item="phase" title="{{phase.storyTitle}}" label="{{phase.content}}" is-link bindtap="onCheckDetail" data-id="{{phase.id}}" data-title="{{phase.storyTitle}}"></i-cell>
+    <i-cell needHover="{{true}}" i-class="story-item" wx:for="{{phases}}" wx:for-item="phase" title="{{phase.storyTitle}}" label="{{phase.content}}" is-link bindtap="onCheckDetail" data-id="{{phase.id}}" data-title="{{phase.storyTitle}}"></i-cell>
 </i-cell-group>
 <i-load-more wx:if="{{ loading }}" loading="{{ loading }}" />
-<i-load-more wx:if="{{ !loading }}" tip="只有这些啦~" loading="{{false}}"/> 
+<i-load-more wx:if="{{ !loading }}" tip="{{storyLineBtnClicked ? (stories.length == 0 ? '空空如也~不去写点儿什么？' : '只有这些啦~') : (phases.length == 0 ? '空空如也~' : '只有这些啦~')}}" loading="{{false}}"/> 
 <!-- </scroll-view> -->

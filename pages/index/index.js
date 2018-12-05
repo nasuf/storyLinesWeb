@@ -1,6 +1,8 @@
 //index.js
 //获取应用实例
 const app = getApp()
+const { $Message } = require('../../dist/base/index');
+
 Page({
     data: {
         stories: [],
@@ -21,26 +23,47 @@ Page({
         errorMsg: "",
         tab_top_current: 'tab1',
         tab_bottom_current: 'homepage',
-        needLoadMoreStories: false
+        needLoadMoreStories: false,
+        tab_top_dot: false,
+        tab_bottom_dot: false,
+        nfcStack: [],
+        nfcStackTop: 0
     },
 
-    handleTabTopChange({ detail }) {
+    handleTabTopChange({
+        detail
+    }) {
         this.setData({
             tab_top_current: detail.key
         });
+        if (detail.key == 'tab1') {
+            var selectedTags = this.selectComponent("#storylist").data.selectedTags;
+            this.selectComponent("#storylist").loadStories(selectedTags, true);
+            this.setData({
+                tab_top_dot: false
+            })
+        }
     },
-    handleTabBottomChange({ detail }) {
+    handleTabBottomChange({
+        detail
+    }) {
+        var _this = this;
         this.setData({
             tab_bottom_current: detail.key
         });
+        if (detail.key == 'mine' && _this.data.tab_bottom_dot == true) {
+            this.setData({
+                tab_bottom_dot: false
+            })
+        }
     },
     //事件处理函数
-    bindViewTap: function () {
+    bindViewTap: function() {
         wx.navigateTo({
             url: '../logs/logs'
         })
     },
-    onLoad: function (options) {
+    onLoad: function(options) {
         this.setData({
             authorized: app.globalData.authorized
         })
@@ -51,9 +74,11 @@ Page({
         }
         // this.loadData();
         this.storyList = this.selectComponent('#storyList');
+        this.subscribeWebSocketConnection()
+        // app.refreshUserInfo();
     },
 
-    userInfoHandler: function (e) {
+    userInfoHandler: function(e) {
         var userInfo = e.detail.userInfo;
         if (userInfo != undefined) {
             app.globalData.userInfo = userInfo
@@ -62,31 +87,29 @@ Page({
             this.setData({
                 authorized: true
             })
-    
-            // wx.reLaunch({
-            //     url: '../index/index',
-            // })
         }
     },
 
-
-    
-
-    inputChange: function (e) {
+    inputChange: function(e) {
         var key = 'phase.' + e.currentTarget.dataset.key;
         this.setData({
             [key]: e.detail.value
         })
     },
 
-    switchChange: function (e) {
+    switchChange: function(e) {
         var key = 'phase.' + e.currentTarget.dataset.key;
         this.setData({
             [key]: e.detail.value == true ? true : false
         })
     },
 
-    post: function () {
+    onNewTabTopClicked: function(e) {
+        var selectedTags = this.selectComponent("#storylist").data.selectedTags;
+        this.selectComponent("#storylist").loadStories(selectedTags, true)
+    },
+
+    post: function() {
         var _this = this;
         var validated = this.validate();
         if (!validated) {
@@ -101,7 +124,7 @@ Page({
             url: app.globalData.serverHost + '/story/story?openid=' + app.globalData.openid + '&needAuth=' + _this.data.phase.needAuth + '&isNewStory=true&isPublic=' + _this.data.phase.isPublic,
             data: _this.data.phase,
             method: 'POST',
-            success: function (res) {
+            success: function(res) {
                 wx.hideLoading();
                 if (res.data.status == 'success') {
 
@@ -109,8 +132,8 @@ Page({
                     wx.showToast({
                         title: '发布成功',
                         icon: 'success',
-                        success: function () {
-                            setTimeout(function () {
+                        success: function() {
+                            setTimeout(function() {
                                 wx.reLaunch({
                                     url: '../index/index',
                                 })
@@ -136,13 +159,13 @@ Page({
         return true;
     },
 
-    showTopErrorTips: function (errorMsg) {
+    showTopErrorTips: function(errorMsg) {
         var _this = this;
         this.setData({
             showTopErrorTips: true,
             errorMsg: errorMsg
         });
-        setTimeout(function () {
+        setTimeout(function() {
             _this.setData({
                 showTopErrorTips: false
             });
@@ -156,5 +179,83 @@ Page({
     onScrollReachBottomOfUserList: function() {
         var component = this.selectComponent('#userList');
         component.loadUserPosts(component.data.storyLineBtnClicked);
+    },
+
+    onPullDownRefresh: function() {
+        this.selectComponent('#storylist').loadStories([], true);
+    },
+
+    subscribeWebSocketConnection: function() {
+        var _this = this;
+        wx.onSocketOpen(function() {
+            console.log('WebSocket Connected!');
+            app.globalData.socketConnected = true;
+            // $Message({
+            //     content: 'Socket Connected!',
+            //     type: 'success',
+            //     duration: 2
+            // });
+        })
+
+        wx.onSocketClose(function() {
+            app.globalData.socketConnected= false;
+            // $Message({
+            //     content: 'Socket Closed!',
+            //     type: 'warning',
+            //     duration: 2
+            // });
+            if (app.globalData.openid && !app.globalData.onHideTriggered) {
+                wx.connectSocket({
+                    url: app.globalData.serverWsHost + '/' + app.globalData.openid
+                })
+            }
+        })
+
+        wx.onSocketMessage(function(res) {
+            console.log(JSON.parse(res.data))
+            var notification = JSON.parse(res.data);
+            if (notification.type == 'MULTIPLE') {
+                _this.setData({
+                    tab_top_dot: true
+                })
+            } else {
+                var nfc = _this.assumbleNotification(notification);
+                
+                    $Message({
+                        content: nfc,
+                        type: 'success',
+                        duration: 3
+                    });
+                
+                wx.request({
+                    url: app.globalData.serverHost + '/story/consumeNotification',
+                    method: 'POST',
+                    data: notification,
+                    success: function (res) {
+
+                    }
+                })
+            }
+        })
+    },
+
+    assumbleNotification: function(notification) {
+        this.setData({
+            tab_bottom_dot: true
+        })
+        var content = '';
+        var titles = notification.storyTitleList;
+        for (let i in titles) {
+            content = content + '《' + titles[i] + '》';
+            if (i != titles.length - 1) {
+                content = content + ', '
+            }
+        }
+        if (notification.isStoryUpdateNotification) {
+            content = '您的故事线：' + content + ' 有更新！';
+        } else {
+            content = '您续写的故事线：' + content + ' 有更新！';
+        }
+        return content;
     }
 })

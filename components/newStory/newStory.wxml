@@ -6,16 +6,16 @@
     <view>请点击授权</view>
 </i-modal>
 <i-panel title="基本信息">
-    <i-input value="{{ phase.storyTitle }}" title="故事标题" data-key="storyTitle" bind:change="inputChange" autofocus placeholder="请输入标题" />
+    <i-input value="{{ phase.storyTitle }}" title="故事标题" data-key="storyTitle" bind:change="inputChange" disabled="{{!authorized}}" type="text" autofocus placeholder="请输入标题" />
     <i-cell-group>
         <i-cell title="是否隐藏">
-            <i-switch value="{{ phase.isPrivate }}" bind:change="switchChange" data-key="isPrivate" slot="footer">
+            <i-switch value="{{ phase.isPrivate }}" disabled="{{!authorized}}" bind:change="switchChange" data-key="isPrivate" slot="footer">
                 <i-icon type="right" slot="open"></i-icon>
                 <i-icon type="close" slot="close"></i-icon>
             </i-switch>
         </i-cell>
         <i-cell title="后续情节是否需要本人审核">
-            <i-switch value="{{ phase.needAuth }}" bind:change="switchChange" data-key="needAuth" slot="footer">
+            <i-switch value="{{ phase.needAuth }}" disabled="{{!authorized}}" bind:change="switchChange" data-key="needAuth" slot="footer">
                 <i-icon type="right" slot="open"></i-icon>
                 <i-icon type="close" slot="close"></i-icon>
             </i-switch>
@@ -24,20 +24,21 @@
             <view class="container" wx:if="{{tags == []}}">
                 <i-spin fix></i-spin>
             </view>
-            <i-input autofocus wx:if="{{otherTagClicked}}" value="{{ otherTags }}" data-key="otherTags" bind:inputconfirm="otherTagInputConfirm" bind:change="inputChange" placeholder="请输入其他类别" />
+            <i-input autofocus wx:if="{{otherTagClicked}}" value="{{ otherTags }}" data-key="otherTags" bind:inputconfirm="otherTagInputConfirm" bind:change="inputChange" placeholder="请输入其他类别" disabled="{{!authorized}}"/>
             <block wx:if="{{tags}}">
-                <i-tag wx:for="{{tags}}" wx:for-item="tag" name="{{index}}" class="i-tags" color="{{tag.color}}" bindchange="tagClick" checkable="{{true}}" data-value="{{tag.value}}" type="border" checked="{{tag.checked}}">
+                <i-tag wx:for="{{tags}}" wx:for-item="tag" wx:if="{{tag.value != '全部'}}" name="{{index}}" class="i-tags" color="{{tag.color}}" bindchange="tagClick" checkable="{{true}}" data-value="{{tag.value}}" type="border" checked="{{tag.checked}}">
                     {{tag.value}}
                 </i-tag>
             </block>
-            
         </i-cell>
     </i-cell-group>
+    <i-input title="字数上限" data-key="storyTitle" disabled="{{!authorized}}" type="number" autofocus placeholder="请输入字数上限，可为空" />
+    <i-input title="字数下线" data-key="storyTitle" disabled="{{!authorized}}" type="number" autofocus placeholder="请输入字数下线，可为空" />
 </i-panel>
 <i-panel title="内容">
-    <i-input type="textarea" value="{{phase.content}}" data-key="content" bind:change="inputChange" placeholder="请输入故事内容"></i-input>
+    <i-input type="textarea" disabled="{{!authorized}}" value="{{phase.content}}" data-key="content" bind:change="inputChange" placeholder="请输入故事内容"></i-input>
 </i-panel>
 
-<i-button disabled="{{!authorized}}" i-class="publish-btn" fixed="true" bind:click="post" type="primary" shape="circle" loading="{{loading}}">
+<i-button disabled="{{!authorized || disabled}}" i-class="publish-btn" fixed="true" bind:click="post" type="primary" shape="circle" loading="{{loading}}">
     发布
 </i-button>

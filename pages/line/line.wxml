@@ -1,14 +1,22 @@
 <scroll-view class="scroll-view" scroll-y style="height: 90%" bindscrolltolower="onReachBottom">
     <view wx:for="{{phases}}" wx:for-item="phase">
 
-        <i-card title="{{index == 0 ? phase.storyTitle : ''}}" data-currentindex="{{currentIndex}}" wx:if="{{!phase.isDeleted}}" bindtap="onTap" data-id="{{phase.id}}" data-index="{{index}}" data-branchphases="{{phase.branchPhases}}">
-            <view slot="content">{{phase.content}}</view>
-            <view slot="footer">
-                <i-avatar style="vertical-align:middle" src="{{phase.authorAvatarUrl}}" size="small"></i-avatar>
-                {{phase.author + '    ' + phase.createdDate}}
-                <i-tag class="i-tags" type="border" color="yellow" wx:if="{{phase.branchPhases && phase.branchPhases.length > 1}}">
-                    有分支情节
-                </i-tag>
+        <i-card title="{{index == 0 ? phase.storyTitle : ''}}" data-currentindex="{{currentIndex}}" wx:if="{{!phase.isDeleted}}">
+            <view slot="content" bindtap="onTap" data-id="{{phase.id}}" data-index="{{index}}" data-branchphases="{{phase.branchPhases}}">{{phase.content}}</view>
+            <view slot="footer-left">
+                <!-- <view class="phase-footer-left"> -->
+                <i-avatar i-class="phase-footer-left-avatar" style="vertical-align:middle" src="{{phase.authorAvatarUrl}}" size="small"></i-avatar>
+                {{phase.author + ' ' + phase.createdDate}}
+
+                <!-- </view> -->
+            </view>
+            <view slot="footer-right">
+                <view class="phase-footer-right">
+                    <i-tag i-class="phase-footer-right-tag" type="border" color="yellow" wx:if="{{phase.branchPhases && phase.branchPhases.length > 1}}">
+                        有分支情节
+                    </i-tag>
+                    <i-icon i-class="phase-footer-right-icon" type="{{ phase.likeShapeFilled ? 'like_fill' : 'like' }}" size="20" color="#ed3f14" data-index="{{index}}" bindtap="likeClicked" /> {{(phase.likes > 0 ? (phase.likes > 1 ? (phase.likes + ' likes') : '1 like') : '')}}
+                </view>
             </view>
         </i-card>
 
@@ -30,8 +38,8 @@
                 </swiper-item>
             </block>
         </swiper> -->
-        <swiper data-currentindex="{{currentIndex}}" data-index="{{index}}" class="swiper" wx:if="{{currentIndex != 'initial' && currentIndex == index && phase.branchPhases && phase.branchPhases.length > 1 && swiperDisplay == true && currentIndex != (phases.length-1)}}" indicator-dots="{{false}}"
-            style="margin-top: 10px; width: 100%;}}" circular="{{true}}" indicator-dots="{{true}}" indicator-color="white" autoplay="{{false}}" interval="{{5000}}" duration="{{500}}" bindchange="swiperChange">
+        <swiper data-currentindex="{{currentIndex}}" data-index="{{index}}" class="swiper" wx:if="{{currentIndex != 'initial' && currentIndex == index && phase.branchPhases && phase.branchPhases.length > 1 && swiperDisplay == true && currentIndex != (phases.length-1)}}"
+            indicator-dots="{{false}}" style="margin-top: 10px; width: 100%;}}" circular="{{true}}" indicator-dots="{{true}}" indicator-color="white" autoplay="{{false}}" interval="{{5000}}" duration="{{500}}" bindchange="swiperChange">
             <block wx:for="{{branchPhases}}" wx:for-item="branch" wx:for-index="branchindex">
                 <swiper-item class="swiper-item">
                     <view class="branch-item weui-panel__bd" wx:if="{{!branch.isDeleted}}" bindtap="onBranchTap" data-id="{{branch.id}}" data-index="{{index}}" data-branchphases="{{phase.branchPhases}}" data-branchindex="{{branchindex}}" hover-class="weui-cell_active" style="margin-right: 5px; margin-left: 5px">

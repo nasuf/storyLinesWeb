@@ -46,6 +46,10 @@ Component({
         url: {
             type: String,
             value: ''
+        },
+        needHover: {
+            type: Boolean,
+            value: false
         }
     },
 

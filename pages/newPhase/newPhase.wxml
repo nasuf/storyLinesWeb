@@ -1,3 +1,11 @@
+<i-alert type="warning" show-icon desc wx:if="{{!authorized}}" bindtap="authorize">
+    请点击此处进行授权操作
+    <view slot="desc">如需正常使用该小程序的全部功能，请允许我们获取您的已公开的微信用户信息（如微信昵称，头像等）。谢谢配合。</view>
+</i-alert>
+<i-modal visible="{{ authModalVisable }}" actions="{{ authActions }}" bind:click="handleAuth">
+    <view>请点击授权</view>
+</i-modal>
+
 <view class="panel" style="margin: 35px;">
     <view class="branch-item" wx:if="{{!parentPhase.isDeleted}}" data-id="{{parentPhase.id}}" data-index="{{index}}" style="margin-right: 5px; margin-left: 5px">
         <view style="padding: 15px">
@@ -11,10 +19,10 @@
     </view>
 </view>
 
-<textarea class="textarea" focus="true" cursor-spacing='100' bindinput="inputChange" data-key="info" placeholder="{{placeholder}}" maxlength='-1' value='{{newPhase.content}}' />
+<textarea disabled="{{!authorized}}" class="textarea" focus="true" cursor-spacing='100' bindinput="inputChange" data-key="info" placeholder="{{placeholder}}" maxlength='-1' value='{{newPhase.content}}' />
 
 <i-message id="message" />
-<button class="publish-btn" bindtap="post">发布</button>
+<button class="publish-btn" bindtap="post" disabled="{{!authorized}}">发布</button>
 <!-- <i-button i-class="publish-btn" bind:click="post" type="primary" size="default">
     发布
 </i-button> -->

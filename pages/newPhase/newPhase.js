@@ -14,14 +14,31 @@ Page({
         parentPhaseId: '',
         showTopErrorTips: false,
         errorMsg: '',
-        loading: false
+        loading: false,
+        authorized: false,
+        authModalVisable: false,
+        authActions: [
+            {
+                name: '授权',
+                color: '#19be6b',
+                type: 'auth',
+                pathKey: 'tab_top_current',
+                pathValue: 'tab1'
+            },
+            {
+                name: '取消'
+            }
+        ],
     },
 
     /**
      * 生命周期函数--监听页面加载
      */
     onLoad: function (options) {
+        // update userInfo to db
+        app.refreshUserInfo();
         var parentPhaseId = options.parentPhaseId;
+        var rootPhaseId = options.rootPhaseId;
         var isNewStory = options.isNewStory;
         var title = options.title;
         var storyId = options.storyId;
@@ -29,7 +46,9 @@ Page({
         this.setData({
             isNewStory: isNewStory,
             storyId: storyId,
-            parentPhaseId: parentPhaseId
+            parentPhaseId: parentPhaseId,
+            rootPhaseId: rootPhaseId,
+            authorized: app.globalData.authorized
         })
         this.loadPhase(parentPhaseId);
         wx.setNavigationBarTitle({
@@ -73,7 +92,7 @@ Page({
         })
         wx.showNavigationBarLoading();
         wx.request({
-            url: app.globalData.serverHost + '/story/story?openid=' + app.globalData.openid + '&isNewStory=false' + '&parentPhaseId=' + this.data.parentPhaseId + '&storyId=' + this.data.storyId,
+            url: app.globalData.serverHost + '/story/story?openid=' + app.globalData.openid + '&isNewStory=false' + '&parentPhaseId=' + this.data.parentPhaseId + '&storyId=' + this.data.storyId + '&rootPhaseId=' + this.data.rootPhaseId,
             data: _this.data.newPhase,
             method: 'POST',
             success: function (res) {
@@ -128,7 +147,17 @@ Page({
         }, 1500);
     },
 
-    
+    authorize: function (e) {
+        this.setData({
+            authModalVisable: !this.data.authModalVisable
+        })
+    },
+
+    handleAuth: function ({ detail }) {
+        this.setData({
+            authModalVisable: false
+        });
+    },
 
     /**
      * 页面相关事件处理函数--监听用户下拉动作

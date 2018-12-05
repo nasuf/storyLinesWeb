@@ -2,7 +2,24 @@
 App({
     onLaunch: function () {
         this.login();
-        
+    },
+
+    onHide: function() {
+        wx.closeSocket(function(){
+            if (this.globalData.openid) {
+                this.createWebSocketConnection()
+            }
+        })
+        this.globalData.onHideTriggered = true;
+    },
+
+
+
+    onShow: function() {
+        this.globalData.onHideTriggered = false;
+        if (this.globalData.openid && !this.globalData.socketConnected) {
+            this.createWebSocketConnection()
+        }
     },
 
     auth: function () {
@@ -32,34 +49,6 @@ App({
                 }
             }
         })
-    },
-
-    refreshUserInfo: function () {
-        var _this = this;
-        wx.getSetting({
-            success: function (res) {
-                // authorized
-                if (res.authSetting['scope.userInfo']) {
-                    wx.getUserInfo({
-                        success: function (res) {
-                            console.log(res);
-                            _this.globalData.userInfo = res.userInfo;
-                            _this.globalData.authorized = true;
-                            // refresh userinfo 
-                            wx.request({
-                                url: _this.globalData.serverHost + '/auth/info?openid=' + _this.globalData.openid,
-                                data: _this.globalData.userInfo,
-                                method: 'POST',
-                                success: function (res) {
-                                    console.log("refresh latest userInfo: " + res)
-                                }
-                            })
-                        }
-                    });
-                }
-            }
-        })
-
     },
 
     login: function () {
@@ -110,7 +99,43 @@ App({
                 console.log(res);
             }
         })
+    },
 
+    refreshUserInfo: function () {
+        var _this = this;
+        wx.getSetting({
+            success: function (res) {
+                // authorized
+                if (res.authSetting['scope.userInfo']) {
+                    wx.getUserInfo({
+                        success: function (res) {
+                            // console.log(res);
+                            _this.globalData.userInfo = res.userInfo;
+                            _this.globalData.authorized = true;
+                            // refresh userinfo 
+                            wx.request({
+                                url: _this.globalData.serverHost + '/auth/info?openid=' + _this.globalData.openid,
+                                data: _this.globalData.userInfo,
+                                method: 'POST',
+                                success: function (res) {
+                                    // console.log("refresh latest userInfo: " + res)
+                                    if (!_this.globalData.socketConnected)
+                                        _this.createWebSocketConnection();
+                                }
+                            })
+                        }
+                    });
+                }
+            }
+        })
+
+    },
+
+    createWebSocketConnection: function () {
+        var _this = this
+        wx.connectSocket({
+            url: _this.globalData.serverWsHost + '/' + _this.globalData.openid
+        })
     },
 
     formatDate: function (milliseconds) {
@@ -146,6 +171,10 @@ App({
         openid: '',
         // serverHost: "http://localhost:19095",
         serverHost: "https://story.nasuf.cn",
-        authorized: false
+        // serverWsHost: "ws://localhost:19095/websocket",
+        serverWsHost: "wss://story.nasuf.cn/websocket",
+        authorized: false,
+        socketConnected: false,
+        onHideTriggered: false
     }
 })

@@ -109,6 +109,7 @@ Component({
            
             this.setData({
                 loading: true,
+                disabled: true
             })
             // wx.showNavigationBarLoading();
             wx.request({
@@ -202,23 +203,28 @@ Component({
             this.setData({
                 authModalVisable: false
             });
-        }
-    },
-    lifetimes: {
-        attached: function() {
+        },
+
+        loadTags: function() {
             var _this = this;
-            this.setData({
-                authorized: app.globalData.authorized
-            })
             wx.request({
                 url: app.globalData.serverHost + '/story/loadTags',
                 method: 'GET',
-                success: function(res) {
+                success: function (res) {
                     _this.setData({
                         tags: res.data.data
                     })
                 }
             })
+        }
+    },
+    lifetimes: {
+        attached: function() {
+            this.setData({
+                authorized: app.globalData.authorized
+            })
+            this.loadTags();
+            app.refreshUserInfo();
         }
     }
 })
