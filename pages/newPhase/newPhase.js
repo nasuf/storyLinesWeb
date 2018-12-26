@@ -17,6 +17,7 @@ Page({
         loading: false,
         authorized: false,
         authModalVisable: false,
+        isStoryNeedApproval: false,
         authActions: [
             {
                 name: '授权',
@@ -29,6 +30,10 @@ Page({
                 name: '取消'
             }
         ],
+        publishing: false,
+        contentLengthMax: null,
+        contentLengthMin: null,
+        contentLength: null
     },
 
     /**
@@ -42,13 +47,30 @@ Page({
         var isNewStory = options.isNewStory;
         var title = options.title;
         var storyId = options.storyId;
-        var newPhase_isNewStory = ''
+        var isStoryNeedApproval = options.isStoryNeedApproval;
+        var newPhase_isNewStory = '';
+        var contentLengthMax = options.contentLengthMax;
+        var contentLengthMin = options.contentLengthMin;
+        var contentLengthLimitExpr = '';
+        if (contentLengthMax != 'null') {
+            contentLengthLimitExpr = '字数上限：' + contentLengthMax
+        }
+        if (contentLengthMin != 'null') {
+            contentLengthLimitExpr = contentLengthLimitExpr == '' ? ('字数下限：' + contentLengthMin) : (contentLengthLimitExpr + '，字数下限：' + contentLengthMin);
+        }
+        if (contentLengthLimitExpr != '') {
+            contentLengthLimitExpr = '(' + contentLengthLimitExpr;
+        }
         this.setData({
             isNewStory: isNewStory,
             storyId: storyId,
             parentPhaseId: parentPhaseId,
             rootPhaseId: rootPhaseId,
-            authorized: app.globalData.authorized
+            authorized: app.globalData.authorized,
+            isStoryNeedApproval: isStoryNeedApproval,
+            contentLengthLimitExpr: contentLengthLimitExpr,
+            contentLengthMax: contentLengthMax,
+            contentLengthMin: contentLengthMin
         })
         this.loadPhase(parentPhaseId);
         wx.setNavigationBarTitle({
@@ -73,14 +95,15 @@ Page({
     inputChange: function(e) {
         var newPhase_content = 'newPhase.content'
         this.setData({
-            [newPhase_content]: e.detail.value
+            [newPhase_content]: e.detail.value,
+            contentLength: e.detail.value.length
         })
     },
 
     post: function () {
         var _this = this;
         var validated = this.validate();
-        if (!validated) {
+        if (!validated || this.data.publishing == true) {
             return;
         }
         wx.showLoading({
@@ -88,11 +111,12 @@ Page({
             icon: 'loading',
         });
         this.setData({
-            loading: true
+            loading: true,
+            publishing: true
         })
         wx.showNavigationBarLoading();
         wx.request({
-            url: app.globalData.serverHost + '/story/story?openid=' + app.globalData.openid + '&isNewStory=false' + '&parentPhaseId=' + this.data.parentPhaseId + '&storyId=' + this.data.storyId + '&rootPhaseId=' + this.data.rootPhaseId,
+            url: app.globalData.serverHost + '/story/story?openid=' + app.globalData.openid + '&isNewStory=false' + '&parentPhaseId=' + this.data.parentPhaseId + '&storyId=' + this.data.storyId + '&rootPhaseId=' + this.data.rootPhaseId + '&needApproval=' + this.data.isStoryNeedApproval,
             data: _this.data.newPhase,
             method: 'POST',
             success: function (res) {
@@ -105,11 +129,10 @@ Page({
                         icon: 'success',
                         success: function () {
                             setTimeout(function () {
-                                wx.navigateBack({
-                                    
-                                })
+                                wx.navigateBack({})
                                 _this.setData({
-                                    loading: false
+                                    loading: false,
+                                    publishing: false
                                 })
                             }, 1500);
                         }
@@ -127,6 +150,20 @@ Page({
             // this.showTopErrorTips('请输入内容')
             $Message({
                 content: '内容不能为空',
+                type: 'warning'
+            });
+            return false;
+        }
+        if (this.data.contentLengthMax != null && this.data.contentLength > parseInt(this.data.contentLengthMax)) {
+            $Message({
+                content: '内容长度不能超过字数上限' + this.data.contentLengthMax,
+                type: 'warning'
+            });
+            return false;
+        }
+        if (this.data.contentLengthMin != null && this.data.contentLength < parseInt(this.data.contentLengthMin)) {
+            $Message({
+                content: '内容长度不能低于字数下限' + this.data.contentLengthMin,
                 type: 'warning'
             });
             return false;

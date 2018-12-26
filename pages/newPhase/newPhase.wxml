@@ -10,7 +10,8 @@
     <view class="branch-item" wx:if="{{!parentPhase.isDeleted}}" data-id="{{parentPhase.id}}" data-index="{{index}}" style="margin-right: 5px; margin-left: 5px">
         <view style="padding: 15px">
             <view style="font-size: 30rpx">
-                前文：
+                前文
+                <view style="font-size: 20rpx" wx:if="{{contentLengthLimitExpr != ''}}">{{contentLengthLimitExpr + (contentLength != null ? '，当前字数：' + contentLength + ')' : ')')}}</view>
             </view>
             <text class="branch-text" decode="{{true}}" space="{{true}}" maxlength='-1'>
                 {{parentPhase.content}}

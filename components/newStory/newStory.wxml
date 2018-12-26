@@ -15,7 +15,7 @@
             </i-switch>
         </i-cell>
         <i-cell title="后续情节是否需要本人审核">
-            <i-switch value="{{ phase.needAuth }}" disabled="{{!authorized}}" bind:change="switchChange" data-key="needAuth" slot="footer">
+            <i-switch value="{{ phase.needApproval }}" disabled="{{!authorized}}" bind:change="switchChange" data-key="needApproval" slot="footer">
                 <i-icon type="right" slot="open"></i-icon>
                 <i-icon type="close" slot="close"></i-icon>
             </i-switch>
@@ -32,12 +32,13 @@
             </block>
         </i-cell>
     </i-cell-group>
-    <i-input title="字数上限" data-key="storyTitle" disabled="{{!authorized}}" type="number" autofocus placeholder="请输入字数上限，可为空" />
-    <i-input title="字数下线" data-key="storyTitle" disabled="{{!authorized}}" type="number" autofocus placeholder="请输入字数下线，可为空" />
+    <i-input title="字数上限" data-key="storyTitle" disabled="{{!authorized}}" type="number" placeholder="请输入字数上限，可为空" data-key="contentLengthMax" value="{{phase.contentLengthMax}}" bind:change="inputChange"/>
+    <i-input title="字数下线" data-key="storyTitle" data-key="contentLengthMin" value="{{phase.contentLengthMin}}" disabled="{{!authorized}}" type="number" placeholder="请输入字数下线，可为空" bind:change="inputChange"/>
 </i-panel>
-<i-panel title="内容">
+<i-panel title="内容 {{ (contentLength !== null && contentLength !== 0) ? ('（当前字数：' + contentLength + '）') : '' }}" hideBorder="{{ true }}">
     <i-input type="textarea" disabled="{{!authorized}}" value="{{phase.content}}" data-key="content" bind:change="inputChange" placeholder="请输入故事内容"></i-input>
 </i-panel>
+<!-- <view class="textarea-counter">0/200</view> -->
 
 <i-button disabled="{{!authorized || disabled}}" i-class="publish-btn" fixed="true" bind:click="post" type="primary" shape="circle" loading="{{loading}}">
     发布

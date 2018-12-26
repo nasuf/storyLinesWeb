@@ -16,9 +16,11 @@ Component({
         phase: {
             storyTitle: '',
             isPrivate: false,
-            needAuth: false,
+            needApproval: false,
             content: '',
-            tags: []
+            tags: [],
+            contentLengthMax: null,
+            contentLengthMin: null
         },
         errorMsg: '',
         loading: false,
@@ -39,6 +41,7 @@ Component({
                 name: '取消'
             }
         ],
+        contentLength: null
     },
 
     /**
@@ -46,15 +49,16 @@ Component({
      */
     methods: {
         inputChange: function (e) {
-            if (e.currentTarget.dataset.key == 'otherTags') {
-                // this.setData({
-                //     otherTag: e.detail.detail.value
-                // })
-            } else {
+            if (e.currentTarget.dataset.key !== 'otherTags') {
                 var key = 'phase.' + e.currentTarget.dataset.key;
                 this.setData({
                     [key]: e.detail.detail.value
                 })
+                if (e.currentTarget.dataset.key == 'content') {
+                    this.setData({
+                        contentLength: e.detail.detail.value.length
+                    })
+                }
             }
             
         },
@@ -113,7 +117,7 @@ Component({
             })
             // wx.showNavigationBarLoading();
             wx.request({
-                url: app.globalData.serverHost + '/story/story?openid=' + app.globalData.openid + '&needAuth=' + _this.data.phase.needAuth + '&isNewStory=true',
+                url: app.globalData.serverHost + '/story/story?openid=' + app.globalData.openid + '&needApproval=' + _this.data.phase.needApproval + '&isNewStory=true',
                 data: _this.data.phase,
                 method: 'POST',
                 success: function (res) {
@@ -153,9 +157,41 @@ Component({
                     type: 'warning'
                 });
                 return false;
+            } else if (this.data.phase.contentLengthMax == '0') {
+                $Message({
+                    content: '字数上限不能为0',
+                    type: 'warning'
+                });
+                return false;
+            } else if (this.data.phase.contentLengthMin == '0') {
+                $Message({
+                    content: '字数下限不能为0',
+                    type: 'warning'
+                });
+                return false;
+            } else if (this.data.phase.contentLengthMax !== null
+                && this.data.phase.contentLengthMin !== null
+                && parseInt(this.data.phase.contentLengthMin) > parseInt(this.data.phase.contentLengthMax)) {
+                $Message({
+                    content: '字数下限不能高于上限',
+                    type: 'warning'
+                });
+                return false;
             } else if (!this.data.phase.content || !this.data.phase.content.trim()) {
                 $Message({
                     content: '内容不能为空',
+                    type: 'warning'
+                });
+                return false;
+            } else if (this.data.phase.contentLengthMax !== null && this.data.phase.content.length > parseInt(this.data.phase.contentLengthMax)) {
+                $Message({
+                    content: '内容长度不能超过' + this.data.phase.contentLengthMax + '字',
+                    type: 'warning'
+                });
+                return false;
+            } else if (this.data.phase.contentLengthMin !== null && this.data.phase.content.length < parseInt(this.data.phase.contentLengthMin)) {
+                $Message({
+                    content: '内容长度不能低于' + this.data.phase.contentLengthMin + '字',
                     type: 'warning'
                 });
                 return false;

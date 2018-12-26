@@ -15,7 +15,7 @@ Page({
         authorized: false,
         phase: {
             isPublic: true,
-            needAuth: false,
+            needApproval: false,
             storyTitle: '',
             content: ''
         },
@@ -121,7 +121,7 @@ Page({
         });
         wx.showNavigationBarLoading();
         wx.request({
-            url: app.globalData.serverHost + '/story/story?openid=' + app.globalData.openid + '&needAuth=' + _this.data.phase.needAuth + '&isNewStory=true&isPublic=' + _this.data.phase.isPublic,
+            url: app.globalData.serverHost + '/story/story?openid=' + app.globalData.openid + '&needApproval=' + _this.data.phase.needApproval + '&isNewStory=true&isPublic=' + _this.data.phase.isPublic,
             data: _this.data.phase,
             method: 'POST',
             success: function(res) {

@@ -1,5 +1,5 @@
 <view class="i-class i-card {{ full ? 'i-card-full' : '' }}">
-    <view class="i-class i-card-header">
+    <view class="i-class i-card-header" wx:if="{{ needHeader }}">
         <view class="i-card-header-content">
             <image class="i-card-header-thumb" src="{{ thumb }}" mode="aspectFit" wx:if="{{ thumb }}" />
             {{ title }}

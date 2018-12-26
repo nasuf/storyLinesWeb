@@ -29,18 +29,23 @@ Component({
         ],
         storyLineBtnStyle: 'background-color: white !important',
         continuesBtnStyle: '',
+        pendingApprovalsBtnStyle: '',
         storyLineBtnClicked: true,
         continuesBtnClicked: false,
+        pendingApprovalsBtnClicked: false,
         stories: [],
         phases: [],
+        pendingApprovals: [],
         storyLinesPageNumber: 0,
         continuesPageNumber: 0,
+        pendingApprovalsPageNumber: 0,
         pageSize: 15,
         sort: {
             createdDate: 'DESC'
         },
         storyLinesBtnTriggered: true,
         continuesBtnTriggered: false,
+        pendingApprovalsBtnTriggered: false,
         loading: false
     },
 
@@ -78,16 +83,20 @@ Component({
                 this.setData({
                     storyLineBtnStyle: 'background-color: white !important',
                     continuesBtnStyle: 'background-color: #f5f5f5 !important',
+                    pendingApprovalsBtnStyle: 'background-color: #f5f5f5 !important',
                     storyLineBtnClicked: true,
-                    continuesBtnClicked: false
+                    continuesBtnClicked: false,
+                    pendingApprovalsBtnClicked: false
                 })
                 // this.loadUserPhases(true);
             } else if (type == 'myContinues') {
                 this.setData({
                     storyLineBtnStyle: 'background-color: #f5f5f5 !important',
                     continuesBtnStyle: 'background-color: white !important',
+                    pendingApprovalsBtnStyle: 'background-color: #f5f5f5 !important',
                     storyLineBtnClicked: false,
-                    continuesBtnClicked: true
+                    continuesBtnClicked: true,
+                    pendingApprovalsBtnClicked: false
                 })
                 if (this.data.continuesBtnTriggered == false) {
                     this.loadUserPosts(false);
@@ -95,6 +104,21 @@ Component({
                 this.setData({
                     // storyLinesBtnTriggered: true,
                     continuesBtnTriggered: true
+                })
+            } else if (type == 'myPendingApprovals') {
+                this.setData({
+                    storyLineBtnStyle: 'background-color: #f5f5f5 !important',
+                    continuesBtnStyle: 'background-color: #f5f5f5 !important',
+                    pendingApprovalsBtnStyle: 'background-color: white !important',
+                    storyLineBtnClicked: false,
+                    continuesBtnClicked: false,
+                    pendingApprovalsBtnClicked: true
+                })
+                if (this.data.pendingApprovalsBtnTriggered == false) {
+                    this.loadPendingApprovals();
+                }
+                this.setData({
+                    pendingApprovalsBtnTriggered: true
                 })
             }
         },
@@ -136,11 +160,30 @@ Component({
             })
         },
 
+        loadPendingApprovals: function() {
+            var _this = this;
+            wx.request({
+                url: app.globalData.serverHost + '/story/approvalList?storyAuthorOpenid=' + app.globalData.openid + '&isStoryNeedApproval=true&pageSize=' + this.data.pageSize + '&pageNumber=' + this.data.pendingApprovalsPageNumber,
+                method: 'GET',
+                success: function(res) {
+                    _this.setData({
+                        pendingApprovals: res.data.data,
+                        pendingApprovalsPageNumber: _this.data.pendingApprovalsPageNumber + 1
+                    })
+                }
+            })
+        },
+
         onCheckDetail: function (e) {
             var id = e.currentTarget.dataset.id;
             var title = e.currentTarget.dataset.title;
+            var isUserLine = e.currentTarget.dataset.isuserline;
+            var isPendingApproval = e.currentTarget.dataset.ispendingapproval;
+            var currentApprovalStatus = e.currentTarget.dataset.status;
+            var hasBeenContinued = e.currentTarget.dataset.hasbeencontinued;
+            var url = '/pages/line/line?parentPhaseId=' + id + '&title=' + title + '&isUserCenterTriggered=' + (isUserLine == 'true' ? 'false' : 'true') + '&isPendingApproval=' + isPendingApproval + '&pendingApprovalPhaseId=' + id + (undefined != currentApprovalStatus ? ('&currentApprovalStatus=' + currentApprovalStatus) : '') + '&hasBeenContinued=' + hasBeenContinued;
             wx.navigateTo({
-                url: '/pages/line/line?parentPhaseId=' + id + '&title=' + title
+                url: url
             })
         },
     },

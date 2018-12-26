@@ -38,7 +38,7 @@ Page({
       });
       wx.showNavigationBarLoading();
       wx.request({
-          url: app.globalData.serverHost + '/story/story?openid=' + app.globalData.openid + '&needAuth=' + _this.data.phase.needAuth + '&isNewStory=true',
+          url: app.globalData.serverHost + '/story/story?openid=' + app.globalData.openid + '&needApproval=' + _this.data.phase.needApproval + '&isNewStory=true',
           data: _this.data.phase,
           method: 'POST',
           success: function (res) {

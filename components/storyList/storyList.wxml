@@ -6,8 +6,8 @@
     </i-cell>
 </block>
 <view wx:for="{{stories}}" wx:for-item="story">
-    <i-card title="{{story.storyTitle}}" data-index="{{index}}">
-        <view slot="content" bindtap="onCheckDetail" data-id="{{story.id}}" data-title="{{story.storyTitle}}">{{story.content}}</view>
+    <i-card i-class="card" title="{{story.storyTitle}}" data-index="{{index}}" extra="{{story.updated == true ? '更新于：' + story.lastUpdatedDate : ''}}" bindtap="onCheckDetail" data-id="{{story.id}}" data-title="{{story.storyTitle}}">
+        <view slot="content">{{story.content}}</view>
         <view slot="footer-left">
             <i-avatar src="{{story.authorAvatarUrl}}" size="small"></i-avatar>
             {{story.author + ' ' + story.createdDate}}

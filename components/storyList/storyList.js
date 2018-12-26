@@ -108,7 +108,7 @@ Component({
           var id = e.currentTarget.dataset.id;
           var title = e.currentTarget.dataset.title;
           wx.navigateTo({
-              url: '/pages/line/line?parentPhaseId=' + id + '&title=' + title
+              url: '/pages/line/line?parentPhaseId=' + id + '&title=' + title + '&isUserCenterTriggered=false'
           })
       },
 
@@ -144,7 +144,11 @@ Component({
                       var storyList = res.data.data;
                       var storyArr = _this.data.stories;
                       for (var i in storyList) {
-                          storyList[i].createdDate = app.formatDate(storyList[i].createdDate)
+                          if (storyList[i].createdDate != storyList[i].lastUpdatedDate) {
+                              storyList[i].updated = true;
+                              storyList[i].lastUpdatedDate = app.formatDate(storyList[i].lastUpdatedDate)
+                          }
+                          storyList[i].createdDate = app.formatDate(storyList[i].createdDate);
                           storyArr.push(storyList[i]);
                       }
                       _this.setData({

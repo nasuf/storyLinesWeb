@@ -19,7 +19,7 @@
         <view class="weui-cell weui-cell_switch">
             <view class="weui-cell__bd">后续情节需要本人审核</view>
             <view class="weui-cell__ft">
-                <switch data-key="needAuth" bindchange="switchChange" />
+                <switch data-key="needApproval" bindchange="switchChange" />
             </view>
         </view>
     </view>

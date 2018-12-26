@@ -3,7 +3,7 @@
     "navigationBarBackgroundColor": "#f5f5f5",
     "navigationBarTitleText": "故事线",
     "navigationBarTextStyle": "black",
-    "enablePullDownRefresh": true,
+    "enablePullDownRefresh": false,
     "usingComponents": {
         "story-list": "/components/storyList/storyList",
         "new-story": "/components/newStory/newStory",

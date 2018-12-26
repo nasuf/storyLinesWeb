@@ -33,6 +33,10 @@ Component({
         likes: {
             type: Number,
             value: 0
+        },
+        needHeader: {
+            type: Boolean,
+            value: true
         }
     },
     methods: {

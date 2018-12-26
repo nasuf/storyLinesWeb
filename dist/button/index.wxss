@@ -108,6 +108,7 @@
 
 .i-btn-inline {
     display: inline-block;
+    float: right;
 }
 
 @keyframes btn-spin {

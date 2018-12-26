@@ -9,7 +9,7 @@ Page({
         parentPhaseId: '',
         rootPhaseId: '',
         pageNumber: 0,
-        pageSize: 25,
+        pageSize: 15,
         childPhasesPageSize: 15,
         sort: {
             like: 'DESC'
@@ -25,10 +25,28 @@ Page({
         branchPhases: [],
         prevParentPhaseId: '',
 
-        swiperDisplay: false,
         createBranchBtnDisplay: false,
         loading: false,
-        openid: ''
+        openid: '',
+
+        isUserCenterTriggered: false,
+        loading: false,
+
+        isStoryNeedApproval: false,
+        isPendingApproval: false,
+        pendingApprovalPhaseId: '',
+        
+        approvalPublishing: false,
+        currentApprovalStatus: '',
+        hasBeenContinued: false,
+
+        contentLengthMax: null,
+        contentLengthMin: null,
+
+        showBranch: false,
+
+        storyTitle: '',
+        lineIndex: ''
     },
 
     /**
@@ -37,6 +55,10 @@ Page({
     onLoad: function (options) {
         var parentPhaseId = options.parentPhaseId;
         var title = options.title;
+        var isPendingApproval = options.isPendingApproval;
+        var pendingApprovalPhaseId = options.pendingApprovalPhaseId;
+        var currentApprovalStatus = options.currentApprovalStatus;
+        var hasBeenContinued = options.hasBeenContinued;
         wx.setNavigationBarTitle({
             title: title.length > 10 ? title.substr(0, 10) + '...' : title,
         })
@@ -44,8 +66,29 @@ Page({
             parentPhaseId: parentPhaseId,
             rootPhaseId: parentPhaseId,
             title: title,
-            openid: app.globalData.openid
+            openid: app.globalData.openid,
+            isUserCenterTriggered: options.isUserCenterTriggered
         })
+        if (undefined != isPendingApproval) {
+            this.setData({
+                isPendingApproval: isPendingApproval
+            })
+        }
+        if (undefined != pendingApprovalPhaseId) {
+            this.setData({
+                pendingApprovalPhaseId: pendingApprovalPhaseId
+            })
+        }
+        if (undefined != currentApprovalStatus) {
+            this.setData({
+                currentApprovalStatus: currentApprovalStatus
+            })
+        }
+        if (undefined != hasBeenContinued) {
+            this.setData({
+                hasBeenContinued: hasBeenContinued     
+            })
+        }
         this.loadLine(parentPhaseId, true);
     },
 
@@ -53,7 +96,7 @@ Page({
         var _this = this;
         wx.showNavigationBarLoading();
         wx.request({
-            url: app.globalData.serverHost + '/story/story/phases/' + parentPhaseId + '?pageNumber=' + this.data.pageNumber + '&pageSize=' + this.data.pageSize + '&childPhasesPageSize=' + this.data.childPhasesPageSize + '&sort=' + encodeURIComponent(JSON.stringify(this.data.sort)) + '&init=' + this.data.init + '&needIncReviewCount=' + needIncReviewCount,
+            url: app.globalData.serverHost + '/story/story/phases/' + parentPhaseId + '?pageNumber=' + this.data.pageNumber + '&pageSize=' + this.data.pageSize + '&childPhasesPageSize=' + this.data.childPhasesPageSize + '&sort=' + encodeURIComponent(JSON.stringify(this.data.sort)) + '&init=' + this.data.init + '&needIncReviewCount=' + needIncReviewCount + '&openid=' + app.globalData.openid,
             success: function(res) {
                 if (res.data.status == 'success') {
                     var phases = res.data.data;
@@ -66,9 +109,49 @@ Page({
                     _this.setData({
                         phases: phasesArr,
                         init: false,
-                        // swiperDisplay: _this.data.swiperDisplay ? false : false,
                         blurStyle: '',
-                        storyTitle: phasesArr[0].storyTitle
+                        storyTitle: phasesArr[0].storyTitle,
+                        isStoryNeedApproval: phasesArr[0].isStoryNeedApproval,
+                        contentLengthMax: phasesArr[0].contentLengthMax,
+                        contentLengthMin: phasesArr[0].contentLengthMin
+                        // pageNumber: _this.data.pageNumber + 1
+                    })
+                    wx.hideNavigationBarLoading();
+                }
+            }
+        })
+    },
+
+    loadParentLine: function() {
+        this.setData({
+            isUserCenterTriggered: false,
+            // phases: [],
+            loading: true
+        })
+        var _this = this;
+        wx.request({
+            url: app.globalData.serverHost + '/story/parentLine?parentPhaseId=' + this.data.parentPhaseId,
+            method: 'GET',
+            success: function(res) {
+                if (res.data.status == 'success') {
+                    var phases = res.data.data;
+                    var currentPhases = _this.data.phases;
+                    var tmpPhases = [];
+                    for (var i in phases) {
+                        phases[i].createdDate = app.formatDate(phases[i].createdDate);
+                        phases[i].likeShapeFilled = (phases[i].likesUsers && phases[i].likesUsers.indexOf(_this.data.openid) != -1) ? true : false;
+                        tmpPhases.push(phases[i]);
+                    }
+                    for (var i=1; i<currentPhases.length; i++) {
+                        tmpPhases.push(currentPhases[i]);
+                    }
+
+                    _this.setData({
+                        phases: tmpPhases,
+                        init: false,
+                        blurStyle: '',
+                        storyTitle: tmpPhases[0].storyTitle,
+                        loading: false
                     })
                     wx.hideNavigationBarLoading();
                 }
@@ -77,29 +160,26 @@ Page({
     },
 
     onTap: function(e) {
-        var branchphases = e.currentTarget.dataset.branchphases;
         var currentIndex = e.currentTarget.dataset.index;
-        var parentPhaseId = e.currentTarget.dataset.id;
-        var _this = this;
-        this.setData({
-            currentIndex: currentIndex,
-            createBranchBtnDisplay: !this.data.createBranchBtnDisplay
-        })
-        if (this.data.branchPhases.length > 0) {
+        if (currentIndex != this.data.phases.length -1) {
+            var branchphases = e.currentTarget.dataset.branchphases;
+            var parentPhaseId = e.currentTarget.dataset.id;
+            var storyTitle = e.currentTarget.dataset.title;
+            var _this = this;
             this.setData({
+                currentIndex: currentIndex,
                 parentPhaseId: parentPhaseId,
+                createBranchBtnDisplay: (branchphases && branchphases.length) > 1 ? this.data.createBranchBtnDisplay : !this.data.createBranchBtnDisplay,
+                showBranch: !this.data.showBranch,
                 branchPhases: [],
-                blurStyle: '',
-                swiperDisplay: !this.data.swiperDisplay
+                storyTitle: storyTitle
             })
-            return;
-        }
-        if (branchphases && branchphases.length > 1) {
-            this.setData({
-                
-                swiperDisplay: true
-            })
-            this.loadBranches(parentPhaseId);
+            if (branchphases && branchphases.length > 1) {
+                this.setData({
+                    parentPhaseId: parentPhaseId
+                })
+                this.loadBranches(parentPhaseId);
+            }
         }
     },
 
@@ -112,8 +192,8 @@ Page({
         this.setData({
             phases: phases,
             branchPhases: [],
-            createBranchBtnDisplay: !this.data.createBranchBtnDisplay,
-            swiperDisplay: !this.data.swiperDisplay
+            showBranch: !this.data.showBranch
+            // createBranchBtnDisplay: !this.data.createBranchBtnDisplay
         })
         this.loadLine(parentPhaseId, false);
     },
@@ -121,17 +201,17 @@ Page({
     loadBranches: function(parentPhaseId) {
         var _this = this;
         wx.request({
-            url: app.globalData.serverHost + '/story/branchPhases?parentPhaseId=' + parentPhaseId + '&pageNumber=' + this.data.branchPageNumber + '&pageSize=' + this.data.branchPageSize + '&sort=' + encodeURIComponent(JSON.stringify(this.data.sort)),
+            url: app.globalData.serverHost + '/story/branchPhases?parentPhaseId=' + parentPhaseId,
             success: function (res) {
                 if (res.data.status == 'success') {
                     var branchPhases = res.data.data;
-                    var branchPhasesArr = _this.data.branchPhases;
+                    // var branchPhasesArr = _this.data.branchPhases;
                     for (var i in branchPhases) {
                         branchPhases[i].createdDate = app.formatDate(branchPhases[i].createdDate);
-                        branchPhasesArr.push(branchPhases[i]);
+                        branchPhases[i].content = branchPhases[i].content.length > 50 ? branchPhases[i].content.substr(0, 50) + '...' : branchPhases[i].content
                     }
                     _this.setData({
-                        branchPhases: branchPhasesArr
+                        branchPhases: branchPhases
                     })
                 }
             }
@@ -139,20 +219,51 @@ Page({
     },
 
     onCreateBtnTap: function(e) {
-        var id = e.currentTarget.dataset.id;
-        var title = e.currentTarget.dataset.title;
+        // var id = e.currentTarget.dataset.id;
+        // var title = e.currentTarget.dataset.title;
+        var id = this.data.parentPhaseId;
+        var title = this.data.storyTitle;
         var storyId = this.data.phases[this.data.phases.length-1].storyId;
         wx.navigateTo({
-            url: '../newPhase/newPhase?rootPhaseId=' + this.data.rootPhaseId + '&parentPhaseId=' + id + '&title=' + title + '&isNewStory=false&storyId=' + storyId
+            url: '../newPhase/newPhase?rootPhaseId=' + this.data.rootPhaseId + '&parentPhaseId=' + id + '&title=' + title + '&isNewStory=false&storyId=' + storyId + '&contentLengthMax=' + this.data.contentLengthMax + '&contentLengthMin=' + this.data.contentLengthMin
         })
     },
 
-    publishTap: function() {
+    continueBtnTap: function() {
         var lastPhaseId = this.data.phases[this.data.phases.length-1].id;
         var storyId = this.data.phases[this.data.phases.length - 1].storyId;
         var title = this.data.title;
         wx.navigateTo({
-            url: '../newPhase/newPhase?rootPhaseId=' + this.data.rootPhaseId + '&parentPhaseId=' + lastPhaseId + '&title=' + title + '&isNewStory=false&storyId=' + storyId
+            url: '../newPhase/newPhase?rootPhaseId=' + this.data.rootPhaseId + '&parentPhaseId=' + lastPhaseId + '&title=' + title + '&isNewStory=false&storyId=' + storyId + '&isStoryNeedApproval=' + this.data.isStoryNeedApproval + '&contentLengthMax=' + this.data.contentLengthMax + '&contentLengthMin=' + this.data.contentLengthMin
+        })
+    },
+
+    approveStatusBtnTap: function(e) {
+        wx.showLoading({
+            title: '审核中...',
+            icon: 'loading',
+        });
+        this.setData({
+            approvalPublishing: true
+        })
+        var _this = this;
+        var approvalStatus = e.currentTarget.dataset.approvalstatus;
+        wx.request({
+            url: app.globalData.serverHost + '/story/approve?approved=' + approvalStatus + '&phaseId=' + this.data.pendingApprovalPhaseId,
+            method: 'GET',
+            success: function(res) {
+                if (res.data.status == 'success') {
+                    wx.showToast({
+                        title: '审核完成',
+                        icon: 'success',
+                        success: function () {
+                            setTimeout(function () {
+                                wx.navigateBack({})
+                            }, 1500);
+                        }
+                    });
+                }
+            }
         })
     },
 
@@ -163,7 +274,6 @@ Page({
         var currentParentPhaseId = this.data.phases[this.data.phases.length-1].id;
         // this.setData({
         //     branchPhases: [],
-        //     swiperDisplay: false,
         //     createBranchBtnDisplay: false
         // })
         this.loadLine(currentParentPhaseId, false);
@@ -174,8 +284,8 @@ Page({
             var currentParentPhaseId = this.data.phases[this.data.phases.length - 1].id;
             this.setData({
                 branchPhases: [],
-                swiperDisplay: false,
-                createBranchBtnDisplay: false
+                createBranchBtnDisplay: false,
+                showBranch: false
             })
             this.loadLine(currentParentPhaseId, false);
         }
@@ -218,6 +328,12 @@ Page({
             success: function(res) {
                 console.log('success rate!');
             }
+        })
+    },
+
+    toggleBranchSider: function() {
+        this.setData({
+            showBranch: !this.data.showBranch
         })
     },
 
