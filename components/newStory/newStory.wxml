@@ -6,7 +6,7 @@
     <view>请点击授权</view>
 </i-modal>
 <i-panel title="基本信息" wx:if="{{authorized}}">
-    <i-input value="{{ phase.storyTitle }}" title="故事标题" data-key="storyTitle" bind:change="inputChange" disabled="{{!authorized}}" type="text" autofocus placeholder="请输入标题" />
+    <i-input value="{{ phase.storyTitle }}" title="标题" data-key="storyTitle" bind:change="inputChange" disabled="{{!authorized}}" type="text" autofocus placeholder="请输入标题" />
     <i-cell-group>
         <i-cell title="是否隐藏">
             <i-switch value="{{ phase.isPrivate }}" disabled="{{!authorized}}" bind:change="switchChange" data-key="isPrivate" slot="footer">
@@ -14,7 +14,7 @@
                 <i-icon type="close" slot="close"></i-icon>
             </i-switch>
         </i-cell>
-        <i-cell title="后续情节是否需要本人审核">
+        <i-cell title="跟帖是否需要本人审核">
             <i-switch value="{{ phase.needApproval }}" disabled="{{!authorized}}" bind:change="switchChange" data-key="needApproval" slot="footer">
                 <i-icon type="right" slot="open"></i-icon>
                 <i-icon type="close" slot="close"></i-icon>
@@ -36,7 +36,7 @@
     <i-input title="字数下线" data-key="storyTitle" data-key="contentLengthMin" value="{{phase.contentLengthMin}}" disabled="{{!authorized}}" type="number" placeholder="可为空，建议200字以上" bind:change="inputChange"/>
 </i-panel>
 <i-panel wx:if="{{authorized}}" title="内容 {{ (contentLength !== null && contentLength !== 0) ? ('（当前字数：' + contentLength + '）') : '' }}" hideBorder="{{ true }}">
-    <i-input type="textarea" disabled="{{!authorized}}" value="{{phase.content}}" data-key="content" bind:change="inputChange" placeholder="请输入故事内容"></i-input>
+    <i-input type="textarea" disabled="{{!authorized}}" value="{{phase.content}}" data-key="content" bind:change="inputChange" placeholder="请输入内容"></i-input>
 </i-panel>
 <!-- <view class="textarea-counter">0/200</view> -->
 

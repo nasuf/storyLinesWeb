@@ -1,0 +1,70 @@
+{
+    "_id" : ObjectId("5c03cbaad3e0d70924bc764d"),
+    "_class" : "com.story.model.Tag",
+    "value" : "全部",
+    "count" : 0,
+    "color" : "blue"
+}
+{
+    "_id" : ObjectId("5c03cbb7d3e0d70924bc764e"),
+    "_class" : "com.story.model.Tag",
+    "value" : "其他",
+    "count" : 0,
+    "color" : "green"
+}
+{
+    "_id" : ObjectId("5c03cbc0d3e0d70924bc764f"),
+    "_class" : "com.story.model.Tag",
+    "value" : "武侠",
+    "count" : 5,
+    "color" : "yellow"
+}
+{
+    "_id" : ObjectId("5c03cbc4d3e0d70924bc7650"),
+    "_class" : "com.story.model.Tag",
+    "value" : "玄幻",
+    "count" : 5,
+    "color" : "yellow"
+}
+{
+    "_id" : ObjectId("5c03cbc8d3e0d70924bc7651"),
+    "_class" : "com.story.model.Tag",
+    "value" : "爱情",
+    "count" : 3,
+    "color" : "yellow"
+}
+{
+    "_id" : ObjectId("5c03cbccd3e0d70924bc7652"),
+    "_class" : "com.story.model.Tag",
+    "value" : "推理",
+    "count" : 2,
+    "color" : "yellow"
+}
+{
+    "_id" : ObjectId("5c03cbd5d3e0d70924bc7653"),
+    "_class" : "com.story.model.Tag",
+    "value" : "恐怖",
+    "count" : 5,
+    "color" : "yellow"
+}
+{
+    "_id" : ObjectId("5c03cbe4d3e0d70924bc7656"),
+    "_class" : "com.story.model.Tag",
+    "value" : "散文",
+    "count" : 3,
+    "color" : "yellow"
+}
+{
+    "_id" : ObjectId("5c03cbe8d3e0d70924bc7657"),
+    "_class" : "com.story.model.Tag",
+    "value" : "杂记",
+    "count" : 4,
+    "color" : "yellow"
+}
+{
+    "_id" : ObjectId("5c067636ac894c3b27b4e70c"),
+    "_class" : "com.story.model.Tag",
+    "value" : "历史",
+    "count" : 6,
+    "color" : "yellow"
+}

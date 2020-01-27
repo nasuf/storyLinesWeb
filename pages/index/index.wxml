@@ -3,7 +3,7 @@
     <i-tabs current="{{ tab_top_current }}" bindchange="handleTabTopChange">
         <i-tab key="tab1" title="最新" dot="{{tab_top_dot}}" bindtap="onNewTabTopClicked" data-tab="new"></i-tab>
         <i-tab key="tab2" title="推荐" bindtap="onNewTabTopClicked" data-tab="recommendation"></i-tab>
-        <i-tab key="tab3" title="新故事线"></i-tab>
+        <i-tab key="tab3" title="提交"></i-tab>
     </i-tabs>
     <scroll-view wx:if="{{tab_top_current == 'tab1' || tab_top_current == 'tab2'}}" scroll-y style="height: 85%; margin-bottom: 50px" bindscrolltolower="onScrollReachBottomOfStoryList" enable-back-to-top="{{true}}">
         <story-list id="storylist"></story-list>
