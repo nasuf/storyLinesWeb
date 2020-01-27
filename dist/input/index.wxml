@@ -29,5 +29,6 @@
         bindfocus="handleInputFocus"
         bindblur="handleInputBlur"
         bindconfirm="handleConfirm"
+        cursor-spacing="100"
     />
 </view>

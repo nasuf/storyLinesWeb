@@ -21,7 +21,7 @@ Page({
         },
         showTopErrorTips: false,
         errorMsg: "",
-        tab_top_current: 'tab1',
+        tab_top_current: 'tab2',
         tab_bottom_current: 'homepage',
         needLoadMoreStories: false,
         tab_top_dot: false,
@@ -36,18 +36,24 @@ Page({
         this.setData({
             tab_top_current: detail.key
         });
+        app.globalData.tabTopCurrent = detail.key;
         if (detail.key == 'tab1') {
-            var selectedTags = this.selectComponent("#storylist").data.selectedTags;
-            this.selectComponent("#storylist").loadStories(selectedTags, true);
+            // var selectedTags = this.selectComponent("#storylist").data.selectedTags;
+            // this.selectComponent("#storylist").loadStories(selectedTags, true);
             this.setData({
                 tab_top_dot: false
             })
-        }
+        } 
     },
     handleTabBottomChange({
         detail
     }) {
         var _this = this;
+        if (detail.key == 'homepage' && _this.data.tab_bottom_current == 'mine') {
+            this.setData({
+                tab_top_current: 'tab2'
+            })
+        }
         this.setData({
             tab_bottom_current: detail.key
         });
@@ -56,6 +62,7 @@ Page({
                 tab_bottom_dot: false
             })
         }
+        
     },
     //事件处理函数
     bindViewTap: function() {
@@ -64,6 +71,7 @@ Page({
         })
     },
     onLoad: function(options) {
+        
         this.setData({
             authorized: app.globalData.authorized
         })
@@ -105,8 +113,9 @@ Page({
     },
 
     onNewTabTopClicked: function(e) {
+        var tabName = e.currentTarget.dataset.tab;
         var selectedTags = this.selectComponent("#storylist").data.selectedTags;
-        this.selectComponent("#storylist").loadStories(selectedTags, true)
+        this.selectComponent("#storylist").loadStories(selectedTags, true, tabName)
     },
 
     post: function() {
@@ -214,6 +223,7 @@ Page({
         wx.onSocketMessage(function(res) {
             console.log(JSON.parse(res.data))
             var notification = JSON.parse(res.data);
+            // notify user there're new stories created.
             if (notification.type == 'MULTIPLE') {
                 _this.setData({
                     tab_top_dot: true

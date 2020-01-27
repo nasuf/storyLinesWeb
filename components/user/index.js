@@ -1,4 +1,5 @@
 const app = getApp()
+const { $Message } = require('../../dist/base/index');
 
 Component({
     /**
@@ -14,6 +15,7 @@ Component({
     data: {
         authorized: false,
         userInfo: null,
+        openid: null,
         authModalVisable: false,
         authActions: [
             {
@@ -39,14 +41,37 @@ Component({
         storyLinesPageNumber: 0,
         continuesPageNumber: 0,
         pendingApprovalsPageNumber: 0,
-        pageSize: 15,
+        pageSize: 20,
         sort: {
             createdDate: 'DESC'
         },
         storyLinesBtnTriggered: true,
         continuesBtnTriggered: false,
         pendingApprovalsBtnTriggered: false,
-        loading: false
+        loading: false,
+
+        actionSheetVisible: false,
+        actions:[
+            {
+                name: '意见或建议',
+                icon: 'brush_fill'
+            }
+        ],
+
+        feedBackVisiable: false,
+        feedBackActions: [
+            {
+                name: '取消'
+            },
+            {
+                name: '发送',
+                color: '#19be6b',
+                loading: false
+            }
+        ],
+        feedback: {
+            content: ''
+        }
     },
 
     /**
@@ -60,7 +85,8 @@ Component({
                 app.globalData.authorized = true;
                 this.setData({
                     userInfo: userInfo,
-                    authorized: true
+                    authorized: true,
+                    openid: app.globalData.openid
                 })
             }
         },
@@ -86,9 +112,11 @@ Component({
                     pendingApprovalsBtnStyle: 'background-color: #f5f5f5 !important',
                     storyLineBtnClicked: true,
                     continuesBtnClicked: false,
-                    pendingApprovalsBtnClicked: false
+                    pendingApprovalsBtnClicked: false,
+                    stories: [],
+                    storyLinesPageNumber: 0
                 })
-                // this.loadUserPhases(true);
+                this.loadUserPosts(true);
             } else if (type == 'myContinues') {
                 this.setData({
                     storyLineBtnStyle: 'background-color: #f5f5f5 !important',
@@ -96,11 +124,13 @@ Component({
                     pendingApprovalsBtnStyle: 'background-color: #f5f5f5 !important',
                     storyLineBtnClicked: false,
                     continuesBtnClicked: true,
-                    pendingApprovalsBtnClicked: false
+                    pendingApprovalsBtnClicked: false,
+                    phases: [],
+                    continuesPageNumber: 0
                 })
-                if (this.data.continuesBtnTriggered == false) {
+                // if (this.data.continuesBtnTriggered == false) {
                     this.loadUserPosts(false);
-                }
+                // }
                 this.setData({
                     // storyLinesBtnTriggered: true,
                     continuesBtnTriggered: true
@@ -112,11 +142,13 @@ Component({
                     pendingApprovalsBtnStyle: 'background-color: white !important',
                     storyLineBtnClicked: false,
                     continuesBtnClicked: false,
-                    pendingApprovalsBtnClicked: true
+                    pendingApprovalsBtnClicked: true,
+                    pendingApprovals: [],
+                    pendingApprovalsPageNumber: 0
                 })
-                if (this.data.pendingApprovalsBtnTriggered == false) {
+                // if (this.data.pendingApprovalsBtnTriggered == false) {
                     this.loadPendingApprovals();
-                }
+                // }
                 this.setData({
                     pendingApprovalsBtnTriggered: true
                 })
@@ -166,8 +198,16 @@ Component({
                 url: app.globalData.serverHost + '/story/approvalList?storyAuthorOpenid=' + app.globalData.openid + '&isStoryNeedApproval=true&pageSize=' + this.data.pageSize + '&pageNumber=' + this.data.pendingApprovalsPageNumber,
                 method: 'GET',
                 success: function(res) {
+                    var originArr = _this.data.pendingApprovals;
+                    var phases = res.data.data;
+                    for (var i in phases) {
+                        if (phases[i].content && phases[i].content.length > 50) {
+                            phases[i].content = phases[i].content.slice(0, 51) + '...'
+                        }
+                        originArr.push(res.data.data[i]);
+                    }
                     _this.setData({
-                        pendingApprovals: res.data.data,
+                        pendingApprovals: originArr,
                         pendingApprovalsPageNumber: _this.data.pendingApprovalsPageNumber + 1
                     })
                 }
@@ -181,11 +221,80 @@ Component({
             var isPendingApproval = e.currentTarget.dataset.ispendingapproval;
             var currentApprovalStatus = e.currentTarget.dataset.status;
             var hasBeenContinued = e.currentTarget.dataset.hasbeencontinued;
-            var url = '/pages/line/line?parentPhaseId=' + id + '&title=' + title + '&isUserCenterTriggered=' + (isUserLine == 'true' ? 'false' : 'true') + '&isPendingApproval=' + isPendingApproval + '&pendingApprovalPhaseId=' + id + (undefined != currentApprovalStatus ? ('&currentApprovalStatus=' + currentApprovalStatus) : '') + '&hasBeenContinued=' + hasBeenContinued;
+            var url = '/pages/line/line?parentPhaseId=' + id + '&title=' + title + '&isUserCenterTriggered=' + (isUserLine == 'true' ? 'false' : 'true') + '&isPendingApproval=' + isPendingApproval + '&pendingApprovalPhaseId=' + id + (undefined != currentApprovalStatus ? ('&currentApprovalStatus=' + currentApprovalStatus) : '') + '&hasBeenContinued=' + hasBeenContinued + '&needIncReviewCount=false';
             wx.navigateTo({
                 url: url
             })
         },
+
+        openActionSheet: function() {
+            this.setData({
+                actionSheetVisible: true
+            })
+        },
+
+        handleActionSheetCancel: function() {
+            this.setData({
+                actionSheetVisible: false
+            })
+        },
+
+        openFeedbackModal: function() {
+            this.setData({
+                feedBackVisiable: true,
+                actionSheetVisible: false
+            })
+        },
+
+        handleFeedbackClick({detail}) {
+            var _this = this;
+            if (detail.index === 0) {
+                this.setData({
+                    feedBackVisiable: false,
+                    ['feedback.content']: ''
+                });
+            } else if (!this.data.feedback.content || !this.data.feedback.content.trim()) {
+                $Message({
+                    content: '内容不能为空',
+                    type: 'warning'
+                });
+            } else {
+                const actions = [...this.data.feedBackActions];
+                if (!actions[1].loading) {
+                    actions[1].loading = true;
+                    this.setData({
+                        feedBackActions: actions,
+                        ['feedback.openid']: app.globalData.openid
+                    })
+                    wx.request({
+                        url: app.globalData.serverHost + '/auth/feedback',
+                        method: 'POST',
+                        data: _this.data.feedback,
+                        success: function (res) {
+                            if (res.data.status == 'success') {
+                                actions[1].loading = false;
+                                _this.setData({
+                                    feedBackActions: actions,
+                                    feedBackVisiable: false,
+                                    ['feedback.content']: ''
+                                })
+                                $Message({
+                                    content: '发送成功',
+                                    type: 'success'
+                                });
+                            }
+                        }
+                    })
+                }
+            }
+        }, 
+
+        feedbackInputChange: function(e) {
+            var content = e.detail.detail.value;
+            this.setData({
+                ['feedback.content']: content
+            })
+        }
     },
 
     lifetimes: {

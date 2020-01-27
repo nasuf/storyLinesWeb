@@ -20,12 +20,15 @@ Component({
       },
       loading: true,
       tags: [],
-      selectedTags: []
+      selectedTags: [],
+      needReviewCount: false
   },
 
   lifetimes: {
     attached: function() {
-        this.loadStories([], true);
+        if (app.globalData.tabTopCurrent != 'tab3') {
+            this.loadStories([], true, 'recommendation');
+        }
         this.loadTags();
     }
   },
@@ -108,7 +111,7 @@ Component({
           var id = e.currentTarget.dataset.id;
           var title = e.currentTarget.dataset.title;
           wx.navigateTo({
-              url: '/pages/line/line?parentPhaseId=' + id + '&title=' + title + '&isUserCenterTriggered=false'
+              url: '/pages/line/line?parentPhaseId=' + id + '&title=' + title + '&isUserCenterTriggered=false&needIncReviewCount=true'
           })
       },
 
@@ -122,7 +125,7 @@ Component({
           })
       },
 
-      loadStories: function(tags, isInit) {
+      loadStories: function(tags, isInit, tabName) {
         //   $Toast({
         //       content: '加载中',
         //       type: 'loading'
@@ -136,7 +139,14 @@ Component({
               })
           }
           var _this = this;
-          var url = app.globalData.serverHost + '/story/story' + (((tags != undefined && tags.length != 0) || (this.data.tags && this.data.tags.length > 0 && this.data.tags[0].checked == false)) ? '/filtered' : '') + '?pageNumber=' + this.data.pageNumber + '&pageSize=' + this.data.pageSize + '&sort=' + encodeURIComponent(JSON.stringify(this.data.sort)) + ((tags != undefined && tags.length != 0) ? ('&tags=' + tags) : '');
+          
+          var sort = this.data.sort;
+          if (tabName == 'recommendation') {
+              sort = {
+                  reviewCount: 'DESC'
+              }
+          }
+          var url = app.globalData.serverHost + '/story/story' + (((tags != undefined && tags.length != 0) || (this.data.tags && this.data.tags.length > 0 && this.data.tags[0].checked == false)) ? '/filtered' : '') + '?pageNumber=' + this.data.pageNumber + '&pageSize=' + this.data.pageSize + '&sort=' + encodeURIComponent(JSON.stringify(sort)) + ((tags != undefined && tags.length != 0) ? ('&tags=' + tags) : '');
           wx.request({
               url: url,
               success: function (res) {
@@ -154,7 +164,8 @@ Component({
                       _this.setData({
                           stories: storyArr,
                           pageNumber: _this.data.pageNumber + 1,
-                          loading: false
+                          loading: false,
+                          needReviewCount: tabName == 'recommendation' ? true : false
                       })
                       wx.stopPullDownRefresh();
                     //   wx.hideNavigationBarLoading();

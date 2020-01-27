@@ -6,6 +6,8 @@
         "i-tag": "../../dist/tag/index",
         "i-load-more": "../../dist/load-more/index",
         "i-cell-group": "../../dist/cell-group/index",
-        "i-cell": "../../dist/cell/index"
+        "i-cell": "../../dist/cell/index",
+        "i-message": "../../dist/message/index",
+        "i-icon": "../../dist/icon/index"
     }
 }

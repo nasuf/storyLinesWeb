@@ -5,7 +5,7 @@
 <i-modal visible="{{ authModalVisable }}" actions="{{ authActions }}" bind:click="handleAuth">
     <view>请点击授权</view>
 </i-modal>
-<i-panel title="基本信息">
+<i-panel title="基本信息" wx:if="{{authorized}}">
     <i-input value="{{ phase.storyTitle }}" title="故事标题" data-key="storyTitle" bind:change="inputChange" disabled="{{!authorized}}" type="text" autofocus placeholder="请输入标题" />
     <i-cell-group>
         <i-cell title="是否隐藏">
@@ -32,14 +32,14 @@
             </block>
         </i-cell>
     </i-cell-group>
-    <i-input title="字数上限" data-key="storyTitle" disabled="{{!authorized}}" type="number" placeholder="请输入字数上限，可为空" data-key="contentLengthMax" value="{{phase.contentLengthMax}}" bind:change="inputChange"/>
-    <i-input title="字数下线" data-key="storyTitle" data-key="contentLengthMin" value="{{phase.contentLengthMin}}" disabled="{{!authorized}}" type="number" placeholder="请输入字数下线，可为空" bind:change="inputChange"/>
+    <i-input title="字数上限" data-key="storyTitle" disabled="{{!authorized}}" type="number" placeholder="可为空，建议1000字以下" data-key="contentLengthMax" value="{{phase.contentLengthMax}}" bind:change="inputChange"/>
+    <i-input title="字数下线" data-key="storyTitle" data-key="contentLengthMin" value="{{phase.contentLengthMin}}" disabled="{{!authorized}}" type="number" placeholder="可为空，建议200字以上" bind:change="inputChange"/>
 </i-panel>
-<i-panel title="内容 {{ (contentLength !== null && contentLength !== 0) ? ('（当前字数：' + contentLength + '）') : '' }}" hideBorder="{{ true }}">
+<i-panel wx:if="{{authorized}}" title="内容 {{ (contentLength !== null && contentLength !== 0) ? ('（当前字数：' + contentLength + '）') : '' }}" hideBorder="{{ true }}">
     <i-input type="textarea" disabled="{{!authorized}}" value="{{phase.content}}" data-key="content" bind:change="inputChange" placeholder="请输入故事内容"></i-input>
 </i-panel>
 <!-- <view class="textarea-counter">0/200</view> -->
 
-<i-button disabled="{{!authorized || disabled}}" i-class="publish-btn" fixed="true" bind:click="post" type="primary" shape="circle" loading="{{loading}}">
+<i-button wx:if="{{authorized}}" disabled="{{!authorized || disabled}}" i-class="publish-btn" fixed="true" bind:click="post" type="primary" shape="circle" loading="{{loading}}">
     发布
 </i-button>

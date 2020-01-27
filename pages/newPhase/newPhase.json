@@ -4,6 +4,7 @@
         "i-message": "../../dist/message/index",
         "i-panel": "../../dist/panel/index",
         "i-alert": "../../dist/alert/index",
-        "i-modal": "../../dist/modal/index"
+        "i-modal": "../../dist/modal/index",
+        "i-tag": "../../dist/tag/index"
     }
 }

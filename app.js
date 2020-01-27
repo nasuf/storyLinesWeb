@@ -11,15 +11,34 @@ App({
             }
         })
         this.globalData.onHideTriggered = true;
+        var _this = this;
+        wx.setStorage({
+            key: 'isWritable',
+            data: false,
+        })
     },
 
 
 
-    onShow: function() {
+    onShow: function () {
         this.globalData.onHideTriggered = false;
         if (this.globalData.openid && !this.globalData.socketConnected) {
             this.createWebSocketConnection()
         }
+        var _this = this;
+        var isWritable = wx.getStorageSync('isWritable');
+        wx.request({
+            url: _this.globalData.serverHost + '/auth/getWritable',
+            method: 'GET',
+            success: function(res) {
+                if (res.data.data !== isWritable) {
+                    wx.setStorageSync('isWritable', res.data.data);
+                    wx.reLaunch({
+                        url: '/pages/index/index',
+                    })
+                }
+            }
+        })
     },
 
     auth: function () {
@@ -68,6 +87,15 @@ App({
                         wx.hideLoading();
                         _this.globalData.openid = res.data.data.openid;
                         _this.globalData.role = res.data.data.role;
+                        _this.globalData.isWritable = res.data.isWritable;
+                        wx.setStorage({
+                            key: 'openid',
+                            data: _this.globalData.openid,
+                        })
+                        wx.setStorage({
+                            key: 'role',
+                            data: _this.globalData.role,
+                        })
                         _this.refreshUserInfo();
                         // 查看管理员登录状态
                         if (_this.globalData.role == "ADMIN") {
@@ -175,6 +203,8 @@ App({
         serverWsHost: "wss://story.nasuf.cn/websocket",
         authorized: false,
         socketConnected: false,
-        onHideTriggered: false
+        onHideTriggered: false,
+        tabTopCurrent: '',
+        isWritable: false
     }
 })

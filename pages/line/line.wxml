@@ -5,8 +5,11 @@
     </i-alert>
     <view wx:for="{{phases}}" wx:for-item="phase">
 
-        <i-card title="{{index == 0 ? phase.storyTitle : ''}}" data-currentindex="{{currentIndex}}" wx:if="{{!phase.isDeleted}}" needHeader="{{index == 0 ? true : false}}" bindtap="onTap" data-id="{{phase.id}}" data-title="{{phase.storyTitle}}"  data-index="{{index}}" data-branchphases="{{phase.branchPhases}}">
-            <view slot="content">{{phase.content}}</view>
+        <i-card title="{{index == 0 ? phase.storyTitle : ''}}" data-currentindex="{{currentIndex}}" wx:if="{{!phase.isDeleted}}" needHeader="{{index == 0 ? true : false}}" borderRadius="15px">
+            <view bindtap="onTap" data-id="{{phase.id}}" data-title="{{phase.storyTitle}}" data-index="{{index}}" data-branchphases="{{phase.branchPhases}}" slot="content">
+                <text>{{phase.content}}</text>
+            </view>
+            <i-icon slot="full_text" i-class="i-card-header-extra" type="fullscreen" bindtap="canvas" />
             <view slot="footer-left">
                 <!-- <view class="phase-footer-left"> -->
                 <i-avatar i-class="phase-footer-left-avatar" style="vertical-align:middle" src="{{phase.authorAvatarUrl}}" size="small"></i-avatar>
@@ -16,38 +19,17 @@
             </view>
             <view slot="footer-right">
                 <view class="phase-footer-right">
-                    <i-tag i-class="phase-footer-right-tag" type="border" color="yellow" wx:if="{{phase.branchPhases && phase.branchPhases.length > 1}}">
-                        有分支情节
+                    <i-tag i-class="phase-footer-right-tag" type="border" color="yellow" wx:if="{{phase.branchPhases && phase.branchPhases.length > 1}}" bindtap="onTap" data-id="{{phase.id}}" data-title="{{phase.storyTitle}}" data-index="{{index}}" data-branchphases="{{phase.branchPhases}}">
+                        点击展开{{phase.branchPhases.length}}个分支
                     </i-tag>
                     <i-icon i-class="phase-footer-right-icon" type="{{ phase.likeShapeFilled ? 'like_fill' : 'like' }}" size="20" color="#ed3f14" data-index="{{index}}" bindtap="likeClicked" /> {{(phase.likes > 0 ? (phase.likes > 1 ? (phase.likes + ' likes') : '1 like') : '')}}
                 </view>
             </view>
         </i-card>
 
-        <i-button wx:if="{{currentIndex != 'initial' && currentIndex == index && createBranchBtnDisplay && currentIndex != (phases.length-1) && phase.branchPhases.length <= 1}}" type="primary" shape="circle" bindtap="onCreateBtnTap" >
+        <i-button wx:if="{{currentIndex != 'initial' && currentIndex == index && createBranchBtnDisplay && currentIndex != (phases.length-1) && phase.branchPhases.length <= 1}}" type="primary" shape="circle" bindtap="onCreateBtnTap">
             由此创建新的分支情节
         </i-button>
-
-        <!-- <i-button wx:if="{{currentIndex != 'initial' && currentIndex == index && createBranchBtnDisplay && currentIndex != (phases.length-1)}}" bindtap="onCreateBtnTap" type="primary" shape="circle" data-id="{{phase.id}}" data-title="{{phase.storyTitle}}">
-            由此创建新的分支情节
-        </i-button> -->
-
-        <!-- <swiper data-currentindex="{{currentIndex}}" data-index="{{index}}" class="swiper" wx:if="{{currentIndex != 'initial' && currentIndex == index && phase.branchPhases && phase.branchPhases.length > 1 && swiperDisplay == true && currentIndex != (phases.length-1)}}"
-            indicator-dots="{{false}}" style="margin-top: 10px; width: 100%;}}" circular="{{true}}" indicator-dots="{{true}}" indicator-color="white" autoplay="{{false}}" interval="{{5000}}" duration="{{500}}" bindchange="swiperChange">
-            <block wx:for="{{branchPhases}}" wx:for-item="branch" wx:for-index="branchindex">
-                <swiper-item class="swiper-item">
-                    <view class="branch-item weui-panel__bd" wx:if="{{!branch.isDeleted}}" bindtap="onBranchTap" data-id="{{branch.id}}" data-index="{{index}}" data-branchphases="{{phase.branchPhases}}" data-branchindex="{{branchindex}}" hover-class="weui-cell_active" style="margin-right: 5px; margin-left: 5px">
-                        <view class="weui-media-box weui-media-box_text">
-                            <view class="weui-media-box__desc">
-                                <text class="branch-text" decode="{{true}}" space="{{true}}" maxlength='-1'>
-                            {{branch.content}}
-                        </text>
-                            </view>
-                        </view>
-                    </view>
-                </swiper-item>
-            </block>
-        </swiper> -->
     </view>
 </scroll-view>
 
@@ -55,7 +37,17 @@
     <view class="demo-container">
         <i-panel class="cell-panel-demo">
             <scroll-view class="scroll-view" scroll-y style="height: 90%">
-                <i-cell needHover="{{true}}" wx:for="{{branchPhases}}" wx:for-item="branch" wx:for-index="branchindex" wx:for-index="branchindex" title="{{branch.content}}" label="{{branch.author}}" data-id="{{branch.id}}" data-index="{{currentIndex}}" data-branchindex="{{branchindex}}" bindtap="onBranchTap"></i-cell>
+                <i-card needHeader="{{false}}" wx:for="{{branchPhases}}" wx:for-item="branch" wx:for-index="branchindex" wx:for-index="branchindex" data-id="{{branch.id}}" data-index="{{currentIndex}}" data-branchindex="{{branchindex}}" bindtap="onBranchTap">
+                    <text class="branchContent" slot="content">{{branch.processedContent}}</text>
+                    <view slot="footer-left">
+                        <!-- <view class="phase-footer-left"> -->
+                        <i-avatar i-class="phase-footer-left-avatar" style="vertical-align:middle" src="{{branch.authorAvatarUrl}}" size="small"></i-avatar>
+                        {{branch.author}}
+
+                        <!-- </view> -->
+                    </view>
+                </i-card>
+                <!-- <i-cell needHover="{{true}}" wx:for="{{branchPhases}}" wx:for-item="branch" wx:for-index="branchindex" wx:for-index="branchindex" title="{{branch.content}}" label="{{branch.author}}" data-id="{{branch.id}}" data-index="{{currentIndex}}" data-branchindex="{{branchindex}}" bindtap="onBranchTap"></i-cell> -->
             </scroll-view>
             <i-button type="primary" bind:click="onCreateBtnTap">创建新分支</i-button>
 
@@ -63,6 +55,12 @@
     </view>
 </i-drawer>
 
+
+<view style='position:fixed;top:999999999999999999999rpx;'>
+    <canvas canvas-id="mycanvas" class='canvas' id="mycanvas" wx:if="{{isShowCav}}" style='border:1px solid #000000; width: {{canvasWidth}}px; height: {{canvasHeight}}px;' bindtap="preview" />
+</view>
+
 <i-button wx:if="{{isPendingApproval == 'true'}}" inline type="primary" bind:click="approveStatusBtnTap" disabled="{{approvalPublishing || currentApprovalStatus == 'APPROVED' || hasBeenContinued == 'true'}}" data-approvalstatus="true">通过</i-button>
 <i-button wx:if="{{isPendingApproval == 'true'}}" inline type="warning" bind:click="approveStatusBtnTap" disabled="{{approvalPublishing || currentApprovalStatus == 'REJECTED' || hasBeenContinued == 'true'}}" data-approvalstatus="false">拒绝</i-button>
 <i-button wx:else type="primary" bind:click="continueBtnTap">由文末续写</i-button>
+<!-- <i-button wx:else type="primary">由文末续写</i-button> -->

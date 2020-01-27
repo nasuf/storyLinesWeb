@@ -3,3 +3,15 @@
     height: 10px;
     line-height: 15px;
 }
+
+.content {
+    display: -webkit-box;
+    /* font-size:28rpx; */
+    /* color:#000000; */
+    line-height: 40rpx;
+    word-break: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp:6;
+    overflow: hidden;
+    text-overflow:ellipsis;
+}

@@ -8,7 +8,7 @@
 
 <view class="userinfo">
     <view wx:if="{{!authorized}}" open-type="getUserInfo" bindgetuserinfo="userInfoHandler">
-        <image class="userinfo-avatar" src="../../images/un_authorized.png" background-size="cover"></image>
+        <image class="userinfo-avatar" src="../../images/un_authorized.png" background-size="cover" bindtap="openActionSheet"></image>
     </view>
     <block wx:else>
         <image bindtap="openActionSheet" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" background-size="cover"></image>
@@ -21,20 +21,32 @@
 <view class="top-btn-view">
     <button class="type-btn" style="{{storyLineBtnStyle}}" plain="true" data-type="myStoryLines" bindtap="onModuleTap">我的故事线</button>
     <button class="type-btn" style="{{continuesBtnStyle}}" plain="true" data-type="myContinues" bindtap="onModuleTap">我的续写</button>
-    <button class="type-btn" style="{{pendingApprovalsBtnStyle}}" plain="true" data-type="myPendingApprovals" bindtap="onModuleTap">待审核</button>
+    <button class="type-btn" style="{{pendingApprovalsBtnStyle}}" plain="true" data-type="myPendingApprovals" bindtap="onModuleTap">待我审核</button>
     <!-- <button wx:if="{{role == 'ADMIN'}}" class="weui-btn type-btn" style="{{adminBtnStyle}}" plain="true" data-type="ADMIN" bindtap="onModuleTap">管理员</button> -->
 </view>
 
 <!-- <scroll-view scroll-y style="height: 88%; margin-bottom: 10px"> -->
 <i-cell-group i-class="list" wx:if="{{storyLineBtnClicked}}">
-    <i-cell needHover="{{true}}" i-class="story-item" wx:for="{{stories}}" wx:for-item="story" title="{{story.storyTitle}}" label="{{story.content}}" is-link bindtap="onCheckDetail" data-id="{{story.id}}" data-ispendingapproval="false" data-title="{{story.storyTitle}}" data-isuserline="true"></i-cell>
+    <i-cell needHover="{{true}}" i-class="story-item" wx:for="{{stories}}" wx:for-item="story" title="{{story.storyTitle}}" label="{{story.content}}" is-link bindtap="onCheckDetail" data-id="{{story.id}}" data-ispendingapproval="false" data-title="{{story.storyTitle}}"
+        data-isuserline="true">
+        <i-icon style="margin-right: 10px" type="lock_fill" slot="icon" wx:if="{{story.isPrivate == true}}" />
+    </i-cell>
 </i-cell-group>
 <i-cell-group i-class="list" wx:if="{{continuesBtnClicked}}">
-    <i-cell needHover="{{true}}" i-class="story-item" wx:for="{{phases}}" wx:for-item="phase" title="{{phase.storyTitle}}" label="{{phase.content}}" is-link bindtap="onCheckDetail" data-id="{{phase.id}}" data-ispendingapproval="false" data-title="{{phase.storyTitle}}" data-isuserline="false" value="{{phase.isStoryNeedApproval ? (phase.approvalStatus == 'APPROVED' ? '审核通过' : (phase.approvalStatus == 'REJECTED' ? '被拒绝' : '待审核')) : ''}}"></i-cell>
+    <i-cell needHover="{{true}}" i-class="story-item" wx:for="{{phases}}" wx:for-item="phase" title="{{phase.storyTitle}}" label="{{phase.content}}" is-link bindtap="onCheckDetail" data-id="{{phase.id}}" data-ispendingapproval="false" data-title="{{phase.storyTitle}}"
+        data-isuserline="false" value="{{phase.isStoryNeedApproval ? (phase.approvalStatus == 'APPROVED' ? '审核通过' : (phase.approvalStatus == 'REJECTED' ? '被拒绝' : '待审核')) : ''}}" valueColor="{{phase.approvalStatus == 'APPROVED' ? '#19be6b' : (phase.approvalStatus == 'REJECTED' ? '#ed3f14' : '#ff9900')}}"></i-cell>
 </i-cell-group>
 <i-cell-group i-class="list" wx:if="{{pendingApprovalsBtnClicked}}">
-    <i-cell needHover="{{true}}" i-class="story-item" wx:for="{{pendingApprovals}}" wx:for-item="approval" title="{{approval.storyTitle}}" label="{{approval.content}}" is-link bindtap="onCheckDetail" data-ispendingapproval="true" data-id="{{approval.id}}" data-title="{{approval.storyTitle}}" data-isuserline="false" data-status="{{approval.approvalStatus}}" data-hasbeencontinued="{{(approval.branchPhases && approval.branchPhases.length) > 0 ? true : false}}" value="{{approval.isStoryNeedApproval == true ? (approval.approvalStatus == 'APPROVED' ? '已通过' : (approval.approvalStatus == 'REJECTED' ? '已拒绝' : '待审核')) : ''}}"></i-cell>
+    <i-cell needHover="{{true}}" i-class="story-item" wx:for="{{pendingApprovals}}" wx:for-item="approval" title="{{approval.storyTitle}}" label="{{approval.content}}" is-link bindtap="onCheckDetail" data-ispendingapproval="true" data-id="{{approval.id}}"
+        data-title="{{approval.storyTitle}}" data-isuserline="false" data-status="{{approval.approvalStatus}}" data-hasbeencontinued="{{(approval.branchPhases && approval.branchPhases.length) > 0 ? true : false}}" value="{{approval.isStoryNeedApproval == true ? (approval.approvalStatus == 'APPROVED' ? '已通过' : (approval.approvalStatus == 'REJECTED' ? '已拒绝' : '待审核')) : ''}}"
+        valueColor="{{approval.approvalStatus == 'APPROVED' ? '#19be6b' : (approval.approvalStatus == 'REJECTED' ? '#ed3f14' : '#ff9900')}}"></i-cell>
 </i-cell-group>
 <i-load-more wx:if="{{ loading }}" loading="{{ loading }}" />
-<i-load-more wx:if="{{ !loading }}" tip="{{storyLineBtnClicked ? (stories.length == 0 ? '空空如也~' : '只有这些啦~') : (phases.length == 0 ? '空空如也~' : '只有这些啦~')}}" loading="{{false}}"/> 
+<i-load-more wx:if="{{ !loading }}" tip="{{storyLineBtnClicked ? (stories.length == 0 ? '空空如也~' : '只有这些啦~') : (phases.length == 0 ? '空空如也~' : '只有这些啦~')}}" loading="{{false}}" />
 <!-- </scroll-view> -->
+
+<i-action-sheet visible="{{ actionSheetVisible && authorized }}" actions="{{ actions }}" show-cancel bind:cancel="handleActionSheetCancel" bind:click="openFeedbackModal" />
+
+<i-modal title="意见或建议" disabled="{{ !feedBackVisiable }}" visible="{{ feedBackVisiable }}" actions="{{ feedBackActions }}" bind:click="handleFeedbackClick">
+    <i-input disabled="{{ !feedBackVisiable }}" value="{{feedback.content}}" bind:change="feedbackInputChange"></i-input>
+</i-modal>

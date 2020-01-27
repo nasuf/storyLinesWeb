@@ -11,16 +11,21 @@
         <view style="padding: 15px">
             <view style="font-size: 30rpx">
                 前文
+                <i-tag wx:if="{{isStoryNeedApproval == 'true'}}" class="i-tags" name="标签一" type="border" color="yellow">
+                    该文续写需审核
+                </i-tag>
                 <view style="font-size: 20rpx" wx:if="{{contentLengthLimitExpr != ''}}">{{contentLengthLimitExpr + (contentLength != null ? '，当前字数：' + contentLength + ')' : ')')}}</view>
             </view>
-            <text class="branch-text" decode="{{true}}" space="{{true}}" maxlength='-1'>
+            <view scroll-y="true" style="line-height: 18px; max-height: {{screenHeight * 0.4}}px">
+            <text class="branch-text" style="line-height: 18px; max-height: {{screenHeight * 0.4}}px" decode="{{true}}" space="{{true}}" maxlength='-1'>
                 {{parentPhase.content}}
             </text>
+            </view>
         </view>
     </view>
 </view>
 
-<textarea disabled="{{!authorized}}" class="textarea" focus="true" cursor-spacing='100' bindinput="inputChange" data-key="info" placeholder="{{placeholder}}" maxlength='-1' value='{{newPhase.content}}' />
+<textarea disabled="{{!authorized}}" class="textarea" cursor-spacing='100' bindinput="inputChange" data-key="info" auto-focus placeholder="{{placeholder}}" maxlength='-1' value='{{newPhase.content}}' />
 
 <i-message id="message" />
 <button class="publish-btn" bindtap="post" disabled="{{!authorized}}">发布</button>

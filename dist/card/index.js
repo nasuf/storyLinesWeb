@@ -37,6 +37,10 @@ Component({
         needHeader: {
             type: Boolean,
             value: true
+        },
+        borderRadius: {
+            type: String,
+            value: ''
         }
     },
     methods: {

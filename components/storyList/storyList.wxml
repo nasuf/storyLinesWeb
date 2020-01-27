@@ -6,11 +6,15 @@
     </i-cell>
 </block>
 <view wx:for="{{stories}}" wx:for-item="story">
-    <i-card i-class="card" title="{{story.storyTitle}}" data-index="{{index}}" extra="{{story.updated == true ? '更新于：' + story.lastUpdatedDate : ''}}" bindtap="onCheckDetail" data-id="{{story.id}}" data-title="{{story.storyTitle}}">
-        <view slot="content">{{story.content}}</view>
+    <i-card wx:if="{{story.isPrivate == false}}" i-class="card" title="{{story.storyTitle}}" data-index="{{index}}" extra="{{story.updated == true ? '更新于：' + story.lastUpdatedDate : ''}}" bindtap="onCheckDetail" data-id="{{story.id}}" data-title="{{story.storyTitle}}" borderRadius="15px">
+        <text class="content" slot="content">{{story.content}}</text>
         <view slot="footer-left">
             <i-avatar src="{{story.authorAvatarUrl}}" size="small"></i-avatar>
             {{story.author + ' ' + story.createdDate}}
+        </view>
+        <view slot="footer-right">
+            <i-icon type="browse_fill" />
+            {{story.reviewCount}}
         </view>
     </i-card>
 </view>

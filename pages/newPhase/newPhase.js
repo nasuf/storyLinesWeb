@@ -33,7 +33,10 @@ Page({
         publishing: false,
         contentLengthMax: null,
         contentLengthMin: null,
-        contentLength: null
+        contentLength: null,
+        storyAuthorOpenid: '',
+
+        screenHeight: null
     },
 
     /**
@@ -42,6 +45,7 @@ Page({
     onLoad: function (options) {
         // update userInfo to db
         app.refreshUserInfo();
+        var sysInfo = wx.getSystemInfoSync();
         var parentPhaseId = options.parentPhaseId;
         var rootPhaseId = options.rootPhaseId;
         var isNewStory = options.isNewStory;
@@ -51,6 +55,7 @@ Page({
         var newPhase_isNewStory = '';
         var contentLengthMax = options.contentLengthMax;
         var contentLengthMin = options.contentLengthMin;
+        var storyAuthorOpenid = options.storyAuthorOpenid;
         var contentLengthLimitExpr = '';
         if (contentLengthMax != 'null') {
             contentLengthLimitExpr = '字数上限：' + contentLengthMax
@@ -70,7 +75,8 @@ Page({
             isStoryNeedApproval: isStoryNeedApproval,
             contentLengthLimitExpr: contentLengthLimitExpr,
             contentLengthMax: contentLengthMax,
-            contentLengthMin: contentLengthMin
+            contentLengthMin: contentLengthMin,
+            screenHeight: sysInfo.screenHeight
         })
         this.loadPhase(parentPhaseId);
         wx.setNavigationBarTitle({
@@ -84,8 +90,10 @@ Page({
             url: app.globalData.serverHost + '/story/phase/' + parentPhaseId,
             success: function(res) {
                 if (res.data.status == 'success') {
+                    var parentPhase = res.data.data;
+                    parentPhase.content = parentPhase.content.replace(/[\n]+/g, '\n\n')
                     _this.setData({
-                        parentPhase: res.data.data
+                        parentPhase: parentPhase
                     })
                 }
             }
@@ -125,7 +133,7 @@ Page({
 
                     wx.hideNavigationBarLoading()
                     wx.showToast({
-                        title: '发布成功',
+                        title: (_this.data.isStoryNeedApproval == 'true' && _this.data.storyAuthorOpenid != app.globalData.openid) ? '等待审核' : '发布成功',
                         icon: 'success',
                         success: function () {
                             setTimeout(function () {
