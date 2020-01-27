@@ -12,6 +12,8 @@
 	"appid": "wx573b321c21026433",
 	"projectname": "storyLineWeb",
 	"isGameTourist": false,
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
 	"condition": {
 		"search": {
 			"current": -1,
