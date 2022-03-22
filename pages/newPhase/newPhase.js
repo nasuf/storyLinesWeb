@@ -146,8 +146,20 @@ Page({
                         }
                     });
 
+                } else if (res.data.status == 'invalid') {
+                    // _this.showTopErrorTips(res.data.message);
+                    wx.hideNavigationBarLoading();
+                    wx.showToast({
+                      title: '内容违规',
+                      icon: 'none'
+                    });
                 } else {
-                    _this.showTopErrorTips('发布失败，请重试');
+                    wx.hideNavigationBarLoading();
+                    wx.showToast({
+                        title: '发布失败',
+                        icon: 'error'
+                      });
+                    // _this.showTopErrorTips('发布失败，请重试');
                 }
             }
         })

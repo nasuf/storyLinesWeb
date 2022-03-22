@@ -192,7 +192,7 @@ Page({
 
     onTap: function (e) {
         var currentIndex = e.currentTarget.dataset.index;
-        if (currentIndex != this.data.phases.length - 1) {
+        // if (currentIndex != this.data.phases.length - 1) {
             var branchphases = e.currentTarget.dataset.branchphases;
             var parentPhaseId = e.currentTarget.dataset.id;
             var storyTitle = e.currentTarget.dataset.title;
@@ -211,7 +211,7 @@ Page({
                 })
                 this.loadBranches(parentPhaseId);
             }
-        }
+        // }
     },
 
     onBranchTap: function (e) {
